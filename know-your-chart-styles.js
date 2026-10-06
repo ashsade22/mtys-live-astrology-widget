@@ -544,13 +544,6 @@ export default `
     }
   }
 
-  @media (max-width: 340px) {
-    .placement-grid,
-    .deeper-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .placement-card {
       transition: none;

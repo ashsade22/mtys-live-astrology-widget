@@ -12,6 +12,14 @@ import { bulkPatch, bulkSave, queryItems } from './wix-client.js';
 
 const COLLECTION = 'DailyHoroscopes';
 const DASH_PATTERN = /[\u002d\u2010\u2011\u2012\u2013\u2014\u2015]/u;
+const DEFAULT_OPENINGS = [
+  'a conversation',
+  'a plan',
+  'a decision',
+  'the real issue',
+  'the practical issue',
+];
+const REPEATED_CONSTRUCTIONS = ['the week becomes less about'];
 
 const HOUSE_COPY = {
   1: {
@@ -154,14 +162,24 @@ export function buildRecords(date, transits, generatedAt) {
 
 export function validateCopy(records) {
   const requiredSigns = new Set(SIGNS.map(([signKey]) => signKey));
+  const allCopy = [];
   for (const record of records) {
     if (!requiredSigns.delete(record.data.signKey)) throw new Error(`Duplicate or unknown sign: ${record.data.signKey}`);
     for (const field of ['mood', 'whatToExpect', 'whatToWatch', 'whereToPutYourEnergy']) {
       const value = record.data[field];
       if (!value || DASH_PATTERN.test(value)) throw new Error(`Invalid ${field} for ${record.data.signKey}`);
+      allCopy.push(value.toLowerCase());
     }
   }
   if (requiredSigns.size) throw new Error(`Missing signs: ${[...requiredSigns].join(', ')}`);
+  for (const opening of DEFAULT_OPENINGS) {
+    const uses = allCopy.filter((value) => value.startsWith(opening)).length;
+    if (uses > 1) throw new Error(`Default opening repeated across the set: ${opening}`);
+  }
+  for (const construction of REPEATED_CONSTRUCTIONS) {
+    const uses = allCopy.filter((value) => value.includes(construction)).length;
+    if (uses > 1) throw new Error(`Default construction repeated across the set: ${construction}`);
+  }
 }
 
 async function main() {

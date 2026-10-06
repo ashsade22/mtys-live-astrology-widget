@@ -1,0 +1,32 @@
+name: Refresh MTYS Current Sky
+
+on:
+  schedule:
+    # GitHub cron is UTC. The script runs hourly and updates only on even
+    # America/Los_Angeles hours so daylight saving changes remain correct.
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: mtys-current-sky
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: automation/package-lock.json
+      - run: npm ci
+      - run: npm run current-sky
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: d1719827-2c26-4bba-979a-b4cd4793d609

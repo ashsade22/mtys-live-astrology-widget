@@ -1,0 +1,13 @@
+{
+  "name": "mtys-astrology-scheduler",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/astronomy.js && node --check src/wix-client.js && node --check src/current-sky.js && node --check src/daily-horoscopes.js",
+    "current-sky": "node src/current-sky.js",
+    "daily": "node src/daily-horoscopes.js"
+  },
+  "dependencies": {
+    "astronomy-engine": "2.1.19"
+  }
+}

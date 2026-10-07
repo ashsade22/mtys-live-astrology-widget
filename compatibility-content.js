@@ -221,7 +221,7 @@ export function buildReading(first, second) {
   const elementKey = [one.element, two.element].sort().join("|");
   const naturalLead = naturalConnections[elementKey];
   return {
-    overview: `${one.name} often ${oneProfile.approach}. ${two.name} tends to ${twoProfile.approach}. The relationship becomes easier to understand when those differences are treated as information instead of proof that one person cares more.`,
+    overview: `${one.name} often ${oneProfile.approach}. ${two.name} usually ${twoProfile.approach}. The relationship becomes easier to understand when those differences are treated as information instead of proof that one person cares more.`,
     natural: `${naturalLead} ${one.name} brings ${oneProfile.gift}. ${two.name} brings ${twoProfile.gift}.`,
     miss: `${one.name} may ${oneProfile.miss}. ${two.name} may ${twoProfile.miss}. The same moment can look completely different from each side, especially when nobody checks what the other person meant.`,
     tense: `${one.name} often ${oneProfile.tension}. ${two.name} often ${twoProfile.tension}. The issue gets harder when each person responds to the reaction instead of the need underneath it.`,

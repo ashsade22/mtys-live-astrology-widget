@@ -42,7 +42,7 @@ export default `
   h1 {
     max-width: 900px;
     margin-bottom: 24px;
-    font-size: clamp(3rem, 6.6vw, 6rem);
+    font-size: clamp(3rem, 6.2vw, 5.4rem);
     letter-spacing: -0.055em;
   }
 
@@ -69,7 +69,7 @@ export default `
 
   .hero {
     position: relative;
-    padding: 108px 0 92px;
+    padding: 78px 0 64px;
     background:
       radial-gradient(circle at 88% 22%, rgba(155, 81, 76, 0.16), transparent 29%),
       linear-gradient(140deg, var(--paper), var(--blush));
@@ -121,7 +121,7 @@ export default `
   }
 
   .section {
-    padding: 86px 0;
+    padding: 48px 0;
   }
 
   .section-paper {
@@ -143,7 +143,7 @@ export default `
 
   .section-heading {
     max-width: 830px;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
 
   .story-grid {
@@ -154,7 +154,7 @@ export default `
 
   .story-card {
     display: flex;
-    min-height: 310px;
+    min-height: 250px;
     padding: 28px;
     flex-direction: column;
     border: 1px solid var(--line);
@@ -249,7 +249,7 @@ export default `
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 40px;
     align-items: center;
-    padding: 42px;
+    padding: 34px;
     border-radius: 28px;
   }
 

@@ -478,12 +478,20 @@ export default `
     .hero,
     .section,
     .placement-view {
-      padding-top: 52px;
-      padding-bottom: 52px;
+      padding-top: 38px;
+      padding-bottom: 38px;
     }
 
     h1 {
       font-size: clamp(2.8rem, 15vw, 4.3rem);
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    .section-heading {
+      margin-bottom: 28px;
     }
 
     .placement-grid,
@@ -494,12 +502,16 @@ export default `
     }
 
     .placement-card {
-      min-height: 245px;
+      min-height: 0;
+      padding: 16px 12px;
     }
 
-    .card-inner,
+    .card-inner {
+      padding: 0;
+    }
+
     .deeper-card {
-      padding: 20px 16px;
+      padding: 16px 12px;
     }
 
     .placement-card h3,
@@ -509,8 +521,19 @@ export default `
 
     .placement-card p,
     .deeper-card p {
-      font-size: 0.88rem;
-      line-height: 1.45;
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    .symbol {
+      width: 46px;
+      height: 46px;
+      margin-bottom: 18px;
+      font-size: 1.5rem;
+    }
+
+    .placement-card p {
+      margin-bottom: 14px;
     }
 
     .card-cta,
@@ -520,8 +543,17 @@ export default `
 
     .product-panel,
     .reading {
-      padding: 28px 22px;
+      padding: 24px 18px;
       border-radius: 22px;
+    }
+
+    .product-panel,
+    .together-grid {
+      gap: 24px;
+    }
+
+    .together-callout {
+      padding: 24px;
     }
 
     .product-button {

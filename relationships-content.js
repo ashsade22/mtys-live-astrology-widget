@@ -35,10 +35,10 @@ export default {
         cta: "Explore Mars"
       },
       {
-        title: "You want to fix it now. They need time.",
-        body: "Moving quickly can feel caring to one person and overwhelming to another. Mars can explain why one of you pushes for action while the other needs the pressure to come down first.",
-        placement: "mars",
-        cta: "Explore Mars"
+        title: "You want every detail. They just want the point.",
+        body: "One person needs the full story to understand what happened. The other is already asking what the point is. Mercury can explain how each of you organizes information and decides what matters.",
+        placement: "mercury",
+        cta: "Explore Mercury"
       },
       {
         title: "The little things are often what make someone feel cared for.",

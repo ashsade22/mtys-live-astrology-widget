@@ -42,7 +42,7 @@ export default `
   h1 {
     max-width: 900px;
     margin-bottom: 24px;
-    font-size: clamp(3rem, 6.2vw, 5.4rem);
+    font-size: clamp(3rem, 6vw, 5.2rem);
     letter-spacing: -0.055em;
   }
 
@@ -69,7 +69,7 @@ export default `
 
   .hero {
     position: relative;
-    padding: 78px 0 64px;
+    padding: 70px 0 56px;
     background:
       radial-gradient(circle at 88% 22%, rgba(155, 81, 76, 0.16), transparent 29%),
       linear-gradient(140deg, var(--paper), var(--blush));
@@ -121,7 +121,7 @@ export default `
   }
 
   .section {
-    padding: 48px 0;
+    padding: 40px 0;
   }
 
   .section-paper {
@@ -154,7 +154,7 @@ export default `
 
   .story-card {
     display: flex;
-    min-height: 250px;
+    min-height: 240px;
     padding: 28px;
     flex-direction: column;
     border: 1px solid var(--line);

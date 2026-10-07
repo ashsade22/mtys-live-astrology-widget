@@ -42,7 +42,7 @@
 
     async load() {
       try {
-        const contentUrl = new URL("know-your-chart-content.js", scriptUrl).href;
+        const contentUrl = new URL("know-your-chart-content.js?v=20261007", scriptUrl).href;
         const stylesUrl = new URL("know-your-chart-styles.js?v=d86c681", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),

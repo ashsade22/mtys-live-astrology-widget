@@ -162,7 +162,8 @@
       if (!this.content) {
         return;
       }
-      const { pageCopy, relationshipTypes } = this.content;
+      const { pageCopy } = this.content;
+      const { relationshipTypes } = pageCopy;
       const state = this.getState();
       this.updateMetadata(state);
 

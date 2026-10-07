@@ -42,7 +42,7 @@
 
     async load() {
       try {
-        const contentUrl = new URL("compatibility-content.js?v=20261007c", scriptUrl).href;
+        const contentUrl = new URL("compatibility-content.js?v=20261007d", scriptUrl).href;
         const stylesUrl = new URL("compatibility-styles.js?v=20261007", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),

@@ -181,14 +181,14 @@ export const pairOverrides = {
     tense: "Gemini can become less serious when the pressure rises. Capricorn can become more formal and fixed. The more one avoids the weight of the issue, the more the other tries to control the discussion.",
     helps: "Be clear about whether you are brainstorming or making a decision. Gemini benefits from landing the point. Capricorn benefits from letting the conversation breathe before asking for a final answer."
   },
-  "sagittarius|virgo": {
+  "virgo|sagittarius": {
     overview: "Sagittarius usually starts with the larger possibility. Virgo starts with what needs attention right now. Together, the relationship can hold both perspective and practical care if neither person dismisses the other as careless or overly critical.",
     natural: "Sagittarius can make room for hope and movement. Virgo can notice the adjustment that makes the plan more realistic. Both people value honesty and improvement, even when their methods look different.",
     miss: "Sagittarius may hear a useful correction as unnecessary doubt. Virgo may hear enthusiasm as a promise that has not been thought through. The disagreement is often about how much detail is needed before moving forward.",
     tense: "Sagittarius can become blunt or restless. Virgo can respond with more questions and sharper corrections. The conversation gets stuck when freedom and responsibility are treated as opposite goals.",
     helps: "Start with the shared goal. Virgo can identify the detail that truly matters. Sagittarius can explain the larger reason for the choice. Leave room for both a practical step and a little possibility."
   },
-  "aquarius|libra": {
+  "libra|aquarius": {
     overview: "Libra pays attention to the relationship between people. Aquarius pays attention to the idea or principle shaping the situation. Both can appreciate thoughtful conversation, but they may define fairness differently.",
     natural: "Conversation, curiosity, and social ease can create a natural connection. Libra helps the exchange feel mutual. Aquarius brings a perspective that keeps the relationship from following a script just because it is familiar.",
     miss: "Libra may look for a response that protects the connection. Aquarius may step back and answer what seems logically true. One person can hear distance while the other believes they are being honest and clear.",

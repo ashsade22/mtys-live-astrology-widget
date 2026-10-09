@@ -90,7 +90,6 @@ import stylesModule from "./career-money-styles.js";
       const p = c.pageCopy;
       const obstacleCards = this.renderCards(c.obstacles, "pattern-card", (item, index) => `<article class="pattern-card"><span class="pattern-number">${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(item[0])}</h3><p>${escapeHtml(item[1])}</p></article>`);
       const crossroadsCards = this.renderCards(c.crossroads, "crossroads-card", (item) => `<a class="crossroads-card" href="${escapeHtml(item.href)}"><div><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.body)}</p></div><span>Start here</span></a>`);
-      const articleCards = this.renderCards(c.articles, "article-card", (item) => `<article class="article-card"><h3>${escapeHtml(item[0])}</h3><p>${escapeHtml(item[1])}</p></article>`);
 
       this.shadowRoot.innerHTML = `<style>${this.styles}</style><main class="page">
         <section class="hero"><div class="wrap hero-inner"><p class="eyebrow">${escapeHtml(p.hero.eyebrow)}</p><h1>${escapeHtml(p.hero.title)}</h1><p class="hero-copy">${escapeHtml(p.hero.body)}</p><a class="primary-button" href="#how-you-work" data-action="explore">${escapeHtml(p.hero.cta)}</a></div></section>
@@ -99,7 +98,6 @@ import stylesModule from "./career-money-styles.js";
         <section class="section money-section" id="money-style"><div class="wrap"><header class="section-heading"><p class="eyebrow">${escapeHtml(p.money.eyebrow)}</p><h2>${escapeHtml(p.money.title)}</h2><p>${escapeHtml(p.money.body)}</p></header>${this.renderMoney()}</div></section>
         <section class="section obstacles-section" id="gets-in-your-way"><div class="wrap"><header class="section-heading"><p class="eyebrow">${escapeHtml(p.obstacles.eyebrow)}</p><h2>${escapeHtml(p.obstacles.title)}</h2><p>${escapeHtml(p.obstacles.body)}</p></header><div class="card-grid">${obstacleCards}</div></div></section>
         <section class="section crossroads-section"><div class="wrap"><header class="section-heading"><p class="eyebrow">${escapeHtml(p.crossroads.eyebrow)}</p><h2>${escapeHtml(p.crossroads.title)}</h2><p>${escapeHtml(p.crossroads.body)}</p></header><div class="crossroads-grid">${crossroadsCards}</div></div></section>
-        <section class="section editorial-section"><div class="wrap"><header class="section-heading"><p class="eyebrow">${escapeHtml(p.editorial.eyebrow)}</p><h2>${escapeHtml(p.editorial.title)}</h2><p>${escapeHtml(p.editorial.body)}</p></header><div class="article-grid">${articleCards}</div></div></section>
         <section class="section profile-section"><div class="wrap profile-panel"><div><p class="eyebrow">${escapeHtml(p.profile.eyebrow)}</p><h2>${escapeHtml(p.profile.title)}</h2><p>${escapeHtml(p.profile.body)}</p></div><div class="profile-action"><span class="future-button" aria-disabled="true">${escapeHtml(p.profile.cta)}</span><p>${escapeHtml(p.profile.note)}</p></div></div></section>
       </main>`;
     }

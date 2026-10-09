@@ -18,6 +18,7 @@
       this.attachShadow({ mode: "open" });
       this.content = null;
       this.styles = "";
+      this.shareStatus = "";
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleClick = this.handleClick.bind(this);
       this.handlePopState = this.handlePopState.bind(this);
@@ -43,7 +44,7 @@
     async load() {
       try {
         const contentUrl = new URL("compatibility-content.js?v=20261007d", scriptUrl).href;
-        const stylesUrl = new URL("compatibility-styles.js?v=20261007", scriptUrl).href;
+        const stylesUrl = new URL("compatibility-styles.js?v=20261008a", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)
@@ -97,7 +98,30 @@
       });
     }
 
-    handleClick(event) {
+    async handleClick(event) {
+      const shareButton = event.target.closest("[data-action='copy-link']");
+      if (shareButton) {
+        const link = window.location.href;
+        try {
+          await navigator.clipboard.writeText(link);
+          this.shareStatus = "Link copied.";
+        } catch (error) {
+          const textArea = document.createElement("textarea");
+          textArea.value = link;
+          textArea.setAttribute("readonly", "");
+          textArea.style.position = "fixed";
+          textArea.style.opacity = "0";
+          document.body.appendChild(textArea);
+          textArea.select();
+          const copied = document.execCommand("copy");
+          textArea.remove();
+          this.shareStatus = copied ? "Link copied." : "Copy the page address to share this pairing.";
+        }
+        const status = this.shadowRoot.querySelector(".share-status");
+        if (status) status.textContent = this.shareStatus;
+        return;
+      }
+
       const exploreButton = event.target.closest("[data-action='explore']");
       if (!exploreButton) {
         return;
@@ -144,7 +168,13 @@
                 <h2 id="pair-heading">${escapeHtml(yours.name)} + ${escapeHtml(theirs.name)}</h2>
                 <p>${escapeHtml(reading.overview)}</p>
               </header>
-              <div class="reading-sections">${sections}</div>
+              <div class="reading-sections">
+                ${sections}
+                <div class="share-row">
+                  <button class="share-button" type="button" data-action="copy-link">Copy this pairing link</button>
+                  <span class="share-status" role="status" aria-live="polite">${escapeHtml(this.shareStatus)}</span>
+                </div>
+              </div>
             </article>
           </div>
         </section>

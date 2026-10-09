@@ -16,22 +16,29 @@
       this.attachShadow({ mode: "open" });
       this.content = null;
       this.styles = "";
+      this.activeStory = 0;
+      this.handleClick = this.handleClick.bind(this);
     }
 
     connectedCallback() {
       this.load();
     }
 
+    disconnectedCallback() {
+      this.shadowRoot.removeEventListener("click", this.handleClick);
+    }
+
     async load() {
       try {
-        const contentUrl = new URL("relationships-content.js?v=20261007c", scriptUrl).href;
-        const stylesUrl = new URL("relationships-styles.js?v=20261007c", scriptUrl).href;
+        const contentUrl = new URL("relationships-content.js?v=20261008a", scriptUrl).href;
+        const stylesUrl = new URL("relationships-styles.js?v=20261008a", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)
         ]);
         this.content = contentModule.default;
         this.styles = stylesModule.default;
+        this.shadowRoot.addEventListener("click", this.handleClick);
         this.render();
       } catch (error) {
         console.error("Failed to load the Relationships experience.", error);
@@ -40,21 +47,36 @@
     }
 
     placementUrl(placement) {
-      return new URL(`know-your-chart-preview.html?placement=${placement}`, scriptUrl).href;
+      return `https://ashley35031.wixsite.com/more-than-your-sun-4/know-your-chart?placement=${placement}`;
     }
 
     chartHomeUrl() {
-      return new URL("know-your-chart-preview.html", scriptUrl).href;
+      return "https://ashley35031.wixsite.com/more-than-your-sun-4/know-your-chart";
+    }
+
+    handleClick(event) {
+      const choice = event.target.closest("[data-story]");
+      if (!choice) return;
+
+      const nextStory = Number(choice.dataset.story);
+      if (!Number.isInteger(nextStory) || !this.content.relate.stories[nextStory]) return;
+
+      this.activeStory = nextStory;
+      this.render();
+      const result = this.shadowRoot.querySelector(".story-result");
+      if (result) result.focus({ preventScroll: true });
     }
 
     render() {
       const { hero, relate, compatibility, kinds, chartBridge, product } = this.content;
-      const stories = relate.stories.map((story) => `
-        <article class="story-card">
-          <h3>${escapeHtml(story.title)}</h3>
-          <p>${escapeHtml(story.body)}</p>
-          <a class="story-link" href="${escapeHtml(this.placementUrl(story.placement))}">${escapeHtml(story.cta)}</a>
-        </article>
+      const activeStory = relate.stories[this.activeStory] || relate.stories[0];
+      const storyChoices = relate.stories.map((story, index) => `
+        <button
+          class="story-choice"
+          type="button"
+          data-story="${index}"
+          aria-pressed="${index === this.activeStory ? "true" : "false"}"
+        >${escapeHtml(story.title)}</button>
       `).join("");
 
       const points = compatibility.points.map((point) => `
@@ -85,7 +107,19 @@
                 <h2 id="relate-heading">${escapeHtml(relate.title)}</h2>
                 <p class="section-copy">${escapeHtml(relate.body)}</p>
               </div>
-              <div class="story-grid">${stories}</div>
+              <div class="story-explorer">
+                <div class="story-choices" aria-label="Relationship situations">${storyChoices}</div>
+                <article class="story-result" tabindex="-1" aria-live="polite">
+                  <p class="result-label">WHAT MAY BE HAPPENING</p>
+                  <h3>${escapeHtml(activeStory.title)}</h3>
+                  <p>${escapeHtml(activeStory.body)}</p>
+                  <div class="try-this">
+                    <p class="result-label">TRY THIS NEXT</p>
+                    <p>${escapeHtml(activeStory.tryThis)}</p>
+                  </div>
+                  <a class="story-link" href="${escapeHtml(this.placementUrl(activeStory.placement))}" target="_top">${escapeHtml(activeStory.cta)}</a>
+                </article>
+              </div>
             </div>
           </section>
 
@@ -119,7 +153,7 @@
                 <h2 id="chart-bridge-heading">${escapeHtml(chartBridge.title)}</h2>
                 <p>${escapeHtml(chartBridge.body)}</p>
               </div>
-              <a class="chart-cta" href="${escapeHtml(this.chartHomeUrl())}">${escapeHtml(chartBridge.cta)}</a>
+              <a class="chart-cta" href="${escapeHtml(this.chartHomeUrl())}" target="_top">${escapeHtml(chartBridge.cta)}</a>
             </div>
           </section>
 

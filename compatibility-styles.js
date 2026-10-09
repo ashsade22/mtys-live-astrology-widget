@@ -286,6 +286,40 @@ export default `
     color: rgba(255, 250, 247, 0.8);
   }
 
+  .share-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 8px;
+  }
+
+  .share-button {
+    min-height: 46px;
+    padding: 12px 18px;
+    border: 1px solid rgba(255, 250, 247, 0.42);
+    border-radius: 999px;
+    color: var(--teal);
+    background: var(--paper);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .share-button:hover,
+  .share-button:focus-visible {
+    text-decoration: underline;
+  }
+
+  .share-button:focus-visible {
+    outline: 3px solid #d2918b;
+    outline-offset: 4px;
+  }
+
+  .share-status {
+    color: rgba(255, 250, 247, 0.78);
+    font-size: 0.86rem;
+  }
+
   .more-layout {
     display: grid;
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
@@ -473,6 +507,11 @@ export default `
     .reading-intro p:last-child,
     .reading-section p {
       font-size: 0.9rem;
+    }
+
+    .share-row {
+      align-items: flex-start;
+      flex-direction: column;
     }
 
     .placement-links a {

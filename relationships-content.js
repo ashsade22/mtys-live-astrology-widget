@@ -8,41 +8,47 @@ export default {
   relate: {
     eyebrow: "HOW YOU RELATE",
     title: "The patterns between people usually make more sense up close.",
-    body: "Start with what is actually happening between you. Your chart can help explain why the same moment feels completely different on each side.",
+    body: "Choose the situation that feels familiar. Then see what may be happening underneath it and one practical way to meet each other more clearly.",
     stories: [
       {
         title: "You want to talk. They need twenty minutes alone.",
         body: "One person may understand a problem by talking through it. The other may need quiet before they know what they think. Mercury can explain why both approaches feel necessary.",
+        tryThis: "Agree on when you will come back to the conversation. Space feels less like rejection when it has a clear return point.",
         placement: "mercury",
         cta: "Explore Mercury"
       },
       {
         title: "Reassurance helps you. It makes them feel cornered.",
         body: "Comfort is personal. One person feels safer with closeness and clear words. Another settles down when they have room to breathe. Your Moon says a lot about what helps you feel okay again.",
+        tryThis: "Ask what reassurance would help and what amount of space would feel respectful. The goal is clarity, not making either need wrong.",
         placement: "moon",
         cta: "Explore the Moon"
       },
       {
         title: "The way you need love may not be the way you show it.",
         body: "You may offer practical help while hoping for affection, or give someone space when they are waiting to be invited closer. Venus can show which kinds of attention actually register.",
+        tryThis: "Name one gesture you naturally give and one gesture you most notice. Do not make the other person guess which form of care will land.",
         placement: "venus",
         cta: "Explore Venus"
       },
       {
         title: "Great chemistry does not mean you handle conflict well.",
         body: "Attraction can be immediate while disagreement takes real work. Venus can describe what pulls you together. Mars can show what happens when frustration enters the room.",
+        tryThis: "Treat attraction and repair as two different skills. Slow the argument down and name the next useful action instead of proving who is more upset.",
         placement: "mars",
         cta: "Explore Mars"
       },
       {
         title: "You want every detail. They just want the point.",
         body: "One person needs the full story to understand what happened. The other is already asking what the point is. Mercury can explain how each of you organizes information and decides what matters.",
+        tryThis: "Start with the point, then add the details that change the meaning. The listener can ask for the context they still need.",
         placement: "mercury",
         cta: "Explore Mercury"
       },
       {
         title: "The little things are often what make someone feel cared for.",
         body: "A thoughtful text, help with a task, uninterrupted time, or a little affection can land very differently. Venus helps explain the gestures you notice and the ones you naturally give.",
+        tryThis: "Compare one small gesture each of you remembers. The details reveal what care looks like on both sides more clearly than a general promise does.",
         placement: "venus",
         cta: "Explore Venus"
       }

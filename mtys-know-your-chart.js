@@ -28,7 +28,7 @@
       this.shadowRoot.innerHTML = `
         <style>
           :host { display: block; min-height: 420px; background: #f7f0eb; }
-          .loading { display: grid; min-height: 420px; place-items: center; color: #103f42; font: 16px Arial, sans-serif; }
+          .loading { display: grid; min-height: 420px; place-items: center; color: #0b2534; font: 16px Arial, sans-serif; }
         </style>
         <div class="loading" role="status">Loading your chart guide</div>
       `;
@@ -43,7 +43,7 @@
     async load() {
       try {
         const contentUrl = new URL("know-your-chart-content.js?v=20261007", scriptUrl).href;
-        const stylesUrl = new URL("know-your-chart-styles.js?v=20261007b", scriptUrl).href;
+        const stylesUrl = new URL("know-your-chart-styles.js?v=20261011a", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)

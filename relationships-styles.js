@@ -1,9 +1,9 @@
 export default `
   :host {
     --ink: #0b2534;
-    --teal: #103f42;
-    --teal-soft: #dce9e5;
-    --rose: #9b514c;
+    --teal: #0b2534;
+    --teal-soft: #efe1dc;
+    --rose: #d2918b;
     --blush: #efe1dc;
     --cream: #f7f0eb;
     --paper: #fffaf7;
@@ -71,7 +71,7 @@ export default `
     position: relative;
     padding: 70px 0 56px;
     background:
-      radial-gradient(circle at 88% 22%, rgba(155, 81, 76, 0.16), transparent 29%),
+      radial-gradient(circle at 88% 22%, rgba(210, 145, 139, 0.2), transparent 29%),
       linear-gradient(140deg, var(--paper), var(--blush));
   }
 
@@ -82,7 +82,7 @@ export default `
     bottom: -58px;
     width: 176px;
     height: 176px;
-    border: 1px solid rgba(16, 63, 66, 0.18);
+    border: 1px solid rgba(210, 145, 139, 0.4);
     border-radius: 50%;
   }
 
@@ -109,7 +109,8 @@ export default `
   }
 
   .hero-cta,
-  .chart-cta {
+  .chart-cta,
+  .compatibility-cta {
     display: inline-block;
     margin-top: 30px;
     padding: 14px 22px;
@@ -242,7 +243,8 @@ export default `
 
   .story-link:focus-visible,
   .hero-cta:focus-visible,
-  .chart-cta:focus-visible {
+  .chart-cta:focus-visible,
+  .compatibility-cta:focus-visible {
     outline: 3px solid #d2918b;
     outline-offset: 4px;
   }
@@ -277,11 +279,7 @@ export default `
     color: rgba(255, 250, 247, 0.74);
   }
 
-  .future-note {
-    margin: 20px 0 0;
-    color: rgba(255, 250, 247, 0.66);
-    font-size: 0.9rem;
-  }
+  .compatibility-cta { margin-top: 24px; }
 
   .kind-list {
     display: flex;

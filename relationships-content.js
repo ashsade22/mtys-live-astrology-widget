@@ -72,7 +72,7 @@ export default {
         body: "The specific adjustments that help both people feel understood without asking either person to become someone else."
       }
     ],
-    note: "Pairing guides such as Cancer + Pisces, Leo + Scorpio, and Gemini + Capricorn can be added here later without reducing a relationship to a score."
+    cta: "Compare Two Sun Signs"
   },
   kinds: {
     eyebrow: "MORE THAN ROMANCE",
@@ -85,11 +85,5 @@ export default {
     title: "Understanding what you bring makes the dynamic easier to see.",
     body: "Your Moon, Mercury, Venus, and Mars can tell you a lot about what you need from other people and what they experience from you.",
     cta: "Explore Your Chart"
-  },
-  product: {
-    eyebrow: "WHEN YOU WANT TO LOOK AT BOTH OF YOU",
-    title: "Two actual charts tell a more personal story.",
-    body: "General compatibility can give you a starting point. Comparing both charts can show how you communicate, what each person needs, where conflict gets stuck, and what helps the relationship function better.",
-    note: "A personalized relationship experience is being developed. Nothing is available for purchase here yet."
   }
 };

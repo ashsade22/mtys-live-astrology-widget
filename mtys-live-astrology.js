@@ -28,11 +28,11 @@
       <h4>Watch For</h4><p>${s(t.watchFor)}</p>
       <h4>Use It For</h4><p>${s(t.useItFor)}</p>
     </article>`).join("")}</div></main>`:'<main><div class="section-heading"><div><span class="eyebrow">Right now</span><h2>Retrograde Right Now</h2></div></div><div class="quiet"><h3>No inner planets are retrograde right now.</h3><p>This is a cleaner stretch for moving plans forward\u2014without skipping the usual double-checks.</p></div></main>'}card(e,a){return`<article class="card"><h3>${s(e)}</h3><p>${s(a)}</p></article>`}emptyState(e){return`<main><div class="quiet"><h3>${s(e)}</h3><p>Please check back shortly.</p></div></main>`}renderError(){this.shadowRoot.querySelector(".app").innerHTML='<div class="quiet"><h3>The astrology is taking a moment to load.</h3><p>Refresh the page or try again shortly.</p></div>'}styles(){return`
-      :host { display:block; width:100%; color:#103f42; font-family:Arial, Helvetica, sans-serif; }
+      :host { display:block; width:100%; color:#0b2534; font-family:Arial, Helvetica, sans-serif; }
       * { box-sizing:border-box; }
       .app { width:100%; background:#f7f0eb; border-radius:28px; overflow:hidden; }
       header { padding:34px 36px 0; background:#efe1dc; }
-      .eyebrow { color:#9b514c; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+      .eyebrow { color:#d2918b; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
       .title-row { display:flex; justify-content:space-between; align-items:end; gap:24px; margin:10px 0 28px; }
       h1, h2, h3 { margin:0; font-family:Georgia, 'Times New Roman', serif; font-weight:500; }
       h1 { font-size:clamp(38px, 6vw, 66px); line-height:.95; }
@@ -40,26 +40,26 @@
       h3 { font-size:24px; line-height:1.15; }
       h4 { margin:22px 0 5px; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
       p { margin:10px 0 0; font-size:16px; line-height:1.58; }
-      .title-row > div > p { max-width:520px; color:#436568; }
+      .title-row > div > p { max-width:520px; color:rgba(11,37,52,.76); }
       .sign-picker { display:grid; gap:7px; min-width:190px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
-      select { width:100%; padding:12px 36px 12px 14px; border:1px solid rgba(16,63,66,.28); border-radius:999px; background:#fffaf7; color:#103f42; font:600 15px Arial, sans-serif; }
+      select { width:100%; padding:12px 36px 12px 14px; border:1px solid rgba(11,37,52,.24); border-radius:999px; background:#fffaf7; color:#0b2534; font:600 15px Arial, sans-serif; }
       nav { display:flex; gap:8px; overflow-x:auto; padding:0 0 18px; scrollbar-width:none; }
       nav::-webkit-scrollbar { display:none; }
-      .tab { flex:0 0 auto; padding:11px 16px; border:1px solid rgba(16,63,66,.28); border-radius:999px; background:transparent; color:#103f42; font:700 13px Arial, sans-serif; cursor:pointer; text-decoration:none; }
-      .tab.active, .tab:hover { background:#103f42; color:#fffaf7; }
+      .tab { flex:0 0 auto; padding:11px 16px; border:1px solid rgba(11,37,52,.24); border-radius:999px; background:transparent; color:#0b2534; font:700 13px Arial, sans-serif; cursor:pointer; text-decoration:none; }
+      .tab.active, .tab:hover { background:#0b2534; color:#fffaf7; }
       main { padding:36px; }
       .section-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:24px; }
-      time, .dates { color:#6c7f80; font-size:13px; }
+      time, .dates { color:rgba(11,37,52,.62); font-size:13px; }
       .grid { display:grid; gap:18px; }
       .grid.two { grid-template-columns:repeat(2, minmax(0,1fr)); }
       .grid.three { grid-template-columns:repeat(3, minmax(0,1fr)); }
       .grid.sky { grid-template-columns:repeat(2, minmax(0,1fr)); }
       .card { padding:26px; background:#fffaf7; border:1px solid rgba(16,63,66,.12); border-radius:20px; box-shadow:0 8px 25px rgba(16,63,66,.04); }
-      .card p { color:#34585b; }
+      .card p { color:rgba(11,37,52,.76); }
       .planet-line { display:flex; align-items:start; justify-content:space-between; gap:14px; }
-      .planet-line span { flex:0 0 auto; color:#9b514c; font-size:13px; font-weight:700; }
+      .planet-line span { flex:0 0 auto; color:#d2918b; font-size:13px; font-weight:700; }
       .quiet { padding:38px; border:1px dashed rgba(16,63,66,.28); border-radius:20px; background:#fffaf7; text-align:center; }
-      .loading { padding:64px 28px; text-align:center; color:#567376; }
+      .loading { padding:64px 28px; text-align:center; color:rgba(11,37,52,.7); }
       a, a:visited, a:hover, a:active { text-decoration:none; }
       @media (max-width:800px) {
         .app { border-radius:20px; }

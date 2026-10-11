@@ -30,8 +30,8 @@
 
     async load() {
       try {
-        const contentUrl = new URL("relationships-content.js?v=20261008a", scriptUrl).href;
-        const stylesUrl = new URL("relationships-styles.js?v=20261008a", scriptUrl).href;
+        const contentUrl = new URL("relationships-content.js?v=20261011a", scriptUrl).href;
+        const stylesUrl = new URL("relationships-styles.js?v=20261011a", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)
@@ -54,6 +54,10 @@
       return "https://ashley35031.wixsite.com/more-than-your-sun-4/know-your-chart";
     }
 
+    compatibilityUrl() {
+      return "https://ashley35031.wixsite.com/more-than-your-sun-4/compatibility";
+    }
+
     handleClick(event) {
       const choice = event.target.closest("[data-story]");
       if (!choice) return;
@@ -68,7 +72,7 @@
     }
 
     render() {
-      const { hero, relate, compatibility, kinds, chartBridge, product } = this.content;
+      const { hero, relate, compatibility, kinds, chartBridge } = this.content;
       const activeStory = relate.stories[this.activeStory] || relate.stories[0];
       const storyChoices = relate.stories.map((story, index) => `
         <button
@@ -129,7 +133,7 @@
                 <p class="eyebrow">${escapeHtml(compatibility.eyebrow)}</p>
                 <h2 id="compatibility-heading">${escapeHtml(compatibility.title)}</h2>
                 <p class="section-copy">${escapeHtml(compatibility.body)}</p>
-                <p class="future-note">${escapeHtml(compatibility.note)}</p>
+                <a class="compatibility-cta" href="${escapeHtml(this.compatibilityUrl())}" target="_top">${escapeHtml(compatibility.cta)}</a>
               </div>
               <div class="compatibility-points">${points}</div>
             </div>
@@ -154,17 +158,6 @@
                 <p>${escapeHtml(chartBridge.body)}</p>
               </div>
               <a class="chart-cta" href="${escapeHtml(this.chartHomeUrl())}" target="_top">${escapeHtml(chartBridge.cta)}</a>
-            </div>
-          </section>
-
-          <section class="section section-paper" aria-labelledby="product-heading">
-            <div class="wrap product-panel">
-              <div>
-                <p class="eyebrow">${escapeHtml(product.eyebrow)}</p>
-                <h2 id="product-heading">${escapeHtml(product.title)}</h2>
-                <p>${escapeHtml(product.body)}</p>
-              </div>
-              <p class="product-note">${escapeHtml(product.note)}</p>
             </div>
           </section>
         </main>

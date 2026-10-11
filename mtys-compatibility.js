@@ -28,7 +28,7 @@
       this.shadowRoot.innerHTML = `
         <style>
           :host { display: block; min-height: 520px; background: #f7f0eb; }
-          .loading { display: grid; min-height: 520px; place-items: center; color: #103f42; font: 16px Arial, sans-serif; }
+          .loading { display: grid; min-height: 520px; place-items: center; color: #0b2534; font: 16px Arial, sans-serif; }
         </style>
         <div class="loading" role="status">Loading Compatibility</div>
       `;
@@ -43,8 +43,8 @@
 
     async load() {
       try {
-        const contentUrl = new URL("compatibility-content.js?v=20261007d", scriptUrl).href;
-        const stylesUrl = new URL("compatibility-styles.js?v=20261008a", scriptUrl).href;
+        const contentUrl = new URL("compatibility-content.js?v=20261011a", scriptUrl).href;
+        const stylesUrl = new URL("compatibility-styles.js?v=20261011a", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)
@@ -208,7 +208,6 @@
           </li>
         `;
       }).join("");
-      const typeList = relationshipTypes.types.map((type) => `<span>${escapeHtml(type)}</span>`).join("");
 
       this.shadowRoot.innerHTML = `
         <style>${this.styles}</style>
@@ -250,24 +249,7 @@
                 <p>${escapeHtml(pageCopy.more.body)}</p>
               </div>
               <ul class="placement-links">${placements}</ul>
-              <div class="relationship-types" aria-label="Future relationship types">
-                <p>${escapeHtml(relationshipTypes.label)}</p>
-                <div>${typeList}</div>
-              </div>
-            </div>
-          </section>
-
-          <section class="section product-section" aria-labelledby="product-heading">
-            <div class="wrap product-panel">
-              <div>
-                <p class="eyebrow">${escapeHtml(pageCopy.product.eyebrow)}</p>
-                <h2 id="product-heading">${escapeHtml(pageCopy.product.title)}</h2>
-                <p>${escapeHtml(pageCopy.product.body)}</p>
-              </div>
-              <div class="product-action">
-                <span class="future-button" aria-disabled="true">${escapeHtml(pageCopy.product.cta)}</span>
-                <p>${escapeHtml(pageCopy.product.note)}</p>
-              </div>
+              <p class="relationship-types">${escapeHtml(relationshipTypes.label)}</p>
             </div>
           </section>
         </main>

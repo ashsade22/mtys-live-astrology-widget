@@ -40,15 +40,7 @@ export const pageCopy = {
     ]
   },
   relationshipTypes: {
-    label: "Built to grow with every kind of relationship",
-    types: ["Romantic", "Friendship", "Family"]
-  },
-  product: {
-    eyebrow: "SUN SIGNS ARE THE STARTING POINT",
-    title: "Want to know what happens when both of your actual charts are part of the conversation?",
-    body: "A personalized compatibility reading can look at how your emotional needs, communication styles, attraction, and conflict patterns interact.",
-    cta: "Explore Your Full Compatibility",
-    note: "A personalized compatibility experience is in development. Nothing is available for purchase here yet."
+    label: "Use the result as a starting point for romantic relationships, friendships, or family dynamics."
   }
 };
 

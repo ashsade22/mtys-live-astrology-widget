@@ -1,5 +1,5 @@
-import * as contentModule from "./career-money-content.js";
-import stylesModule from "./career-money-styles.js";
+import * as contentModule from "./career-money-content.js?v=20261011b";
+import stylesModule from "./career-money-styles.js?v=20261011b";
 
 (() => {
   const escapeHtml = (value) => String(value)

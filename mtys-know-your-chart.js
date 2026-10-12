@@ -22,6 +22,8 @@
       this.styles = "";
       this.handleClick = this.handleClick.bind(this);
       this.handlePopState = this.handlePopState.bind(this);
+      this.routeState = {};
+      this.removeBridgeListener = null;
     }
 
     connectedCallback() {
@@ -33,11 +35,20 @@
         <div class="loading" role="status">Loading your chart guide</div>
       `;
       this.load();
+      if (window.MTYSBridge) {
+        this.routeState = window.MTYSBridge.getRouteState();
+        this.removeBridgeListener = window.MTYSBridge.on((type, state) => {
+          if (type !== "route-state") return;
+          this.routeState = state;
+          if (this.content) this.render();
+        });
+      }
     }
 
     disconnectedCallback() {
       this.shadowRoot.removeEventListener("click", this.handleClick);
       window.removeEventListener("popstate", this.handlePopState);
+      if (this.removeBridgeListener) this.removeBridgeListener();
     }
 
     async load() {
@@ -65,6 +76,7 @@
 
     getState() {
       const params = new URLSearchParams(window.location.search);
+      Object.entries(this.routeState).forEach(([key, value]) => params.set(key, value));
       const placement = params.get("placement");
       const sign = params.get("sign");
       const validPlacement = placement && this.content.placements[placement] ? placement : null;

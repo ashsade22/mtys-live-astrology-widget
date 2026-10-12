@@ -99,9 +99,15 @@
     }
 
     async handleClick(event) {
+      const route = event.target.closest("[data-mtys-route]");
+      if (route && window.MTYSBridge && window.MTYSBridge.navigate(event, route.href)) return;
+
       const shareButton = event.target.closest("[data-action='copy-link']");
       if (shareButton) {
-        const link = window.location.href;
+        const state = this.getState();
+        const link = window.MTYSBridge
+          ? window.MTYSBridge.brandedUrl("/compatibility", { you: state.yours.key, them: state.theirs.key })
+          : `https://ashley35031.wixsite.com/more-than-your-sun-4/compatibility?you=${state.yours.key}&them=${state.theirs.key}`;
         try {
           await navigator.clipboard.writeText(link);
           this.shareStatus = "Link copied.";
@@ -201,7 +207,7 @@
         const url = `${chartBaseUrl}?placement=${placement.key}`;
         return `
           <li>
-            <a href="${escapeHtml(url)}" target="_top">
+            <a href="${escapeHtml(url)}" target="_blank" rel="noopener" data-mtys-route>
               <strong>${escapeHtml(placement.name)}</strong>
               <span>${escapeHtml(placement.body)}</span>
             </a>

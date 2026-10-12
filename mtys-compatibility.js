@@ -68,6 +68,8 @@
 
     getState() {
       const params = new URLSearchParams(window.location.search);
+      const hostState = window.MTYSBridge ? window.MTYSBridge.consumeRouteState() : {};
+      Object.entries(hostState).forEach(([key, value]) => params.set(key, value));
       return {
         yours: this.validSign(params.get("you")) || this.validSign("aries"),
         theirs: this.validSign(params.get("them")) || this.validSign("taurus")

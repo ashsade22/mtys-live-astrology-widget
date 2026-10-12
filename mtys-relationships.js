@@ -59,6 +59,9 @@
     }
 
     handleClick(event) {
+      const route = event.target.closest("[data-mtys-route]");
+      if (route && window.MTYSBridge && window.MTYSBridge.navigate(event, route.href)) return;
+
       const choice = event.target.closest("[data-story]");
       if (!choice) return;
 
@@ -121,7 +124,7 @@
                     <p class="result-label">TRY THIS NEXT</p>
                     <p>${escapeHtml(activeStory.tryThis)}</p>
                   </div>
-                  <a class="story-link" href="${escapeHtml(this.placementUrl(activeStory.placement))}" target="_top">${escapeHtml(activeStory.cta)}</a>
+                  <a class="story-link" href="${escapeHtml(this.placementUrl(activeStory.placement))}" target="_blank" rel="noopener" data-mtys-route>${escapeHtml(activeStory.cta)}</a>
                 </article>
               </div>
             </div>
@@ -133,7 +136,7 @@
                 <p class="eyebrow">${escapeHtml(compatibility.eyebrow)}</p>
                 <h2 id="compatibility-heading">${escapeHtml(compatibility.title)}</h2>
                 <p class="section-copy">${escapeHtml(compatibility.body)}</p>
-                <a class="compatibility-cta" href="${escapeHtml(this.compatibilityUrl())}" target="_top">${escapeHtml(compatibility.cta)}</a>
+                <a class="compatibility-cta" href="${escapeHtml(this.compatibilityUrl())}" target="_blank" rel="noopener" data-mtys-route>${escapeHtml(compatibility.cta)}</a>
               </div>
               <div class="compatibility-points">${points}</div>
             </div>
@@ -157,7 +160,7 @@
                 <h2 id="chart-bridge-heading">${escapeHtml(chartBridge.title)}</h2>
                 <p>${escapeHtml(chartBridge.body)}</p>
               </div>
-              <a class="chart-cta" href="${escapeHtml(this.chartHomeUrl())}" target="_top">${escapeHtml(chartBridge.cta)}</a>
+              <a class="chart-cta" href="${escapeHtml(this.chartHomeUrl())}" target="_blank" rel="noopener" data-mtys-route>${escapeHtml(chartBridge.cta)}</a>
             </div>
           </section>
         </main>

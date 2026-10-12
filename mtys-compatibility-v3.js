@@ -49,7 +49,14 @@
       }
     };
 
-    postToHost({ type: "ready" });
+    let readyAttempts = 0;
+    const announceReady = () => {
+      if (hostReady || readyAttempts >= 20) return;
+      readyAttempts += 1;
+      postToHost({ type: "ready" });
+      window.setTimeout(announceReady, 250);
+    };
+    announceReady();
   }
 
   const scriptUrl = document.currentScript && document.currentScript.src

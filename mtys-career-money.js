@@ -42,6 +42,9 @@ import stylesModule from "./career-money-styles.js?v=20261011b";
     }
 
     handleClick(event) {
+      const route = event.target.closest("[data-mtys-route]");
+      if (route && window.MTYSBridge && window.MTYSBridge.navigate(event, route.href)) return;
+
       const choice = event.target.closest("[data-group][data-value]");
       if (choice) {
         this.state[choice.dataset.group] = choice.dataset.value;
@@ -64,7 +67,7 @@ import stylesModule from "./career-money-styles.js?v=20261011b";
     renderQuestionExplorer(group, items, ariaLabel) {
       const active = items.find((item) => item.id === this.state[group]) || items[0];
       const buttons = items.map((item) => `<button class="choice-button" type="button" role="tab" aria-selected="${item.id === active.id}" data-group="${escapeHtml(group)}" data-value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`).join("");
-      return `<div class="explorer"><div class="choice-list" role="tablist" aria-label="${escapeHtml(ariaLabel)}">${buttons}</div><article class="detail-panel" data-panel="${escapeHtml(group)}" tabindex="-1"><p class="placement-label">LOOK TO ${escapeHtml(active.placementName.toUpperCase())}</p><h3>${escapeHtml(active.title)}</h3><p>${escapeHtml(active.body)}</p>${active.prompt ? `<p class="detail-prompt">${escapeHtml(active.prompt)}</p>` : ""}<a class="chart-link" href="${escapeHtml(this.chartUrl(active.placement))}" target="_top">${escapeHtml(active.linkLabel)}</a></article></div>`;
+      return `<div class="explorer"><div class="choice-list" role="tablist" aria-label="${escapeHtml(ariaLabel)}">${buttons}</div><article class="detail-panel" data-panel="${escapeHtml(group)}" tabindex="-1"><p class="placement-label">LOOK TO ${escapeHtml(active.placementName.toUpperCase())}</p><h3>${escapeHtml(active.title)}</h3><p>${escapeHtml(active.body)}</p>${active.prompt ? `<p class="detail-prompt">${escapeHtml(active.prompt)}</p>` : ""}<a class="chart-link" href="${escapeHtml(this.chartUrl(active.placement))}" target="_blank" rel="noopener" data-mtys-route>${escapeHtml(active.linkLabel)}</a></article></div>`;
     }
 
     render() {
@@ -72,7 +75,7 @@ import stylesModule from "./career-money-styles.js?v=20261011b";
       if (!c) return;
       const p = c.pageCopy;
       const placementCards = c.placementMap.map((item) => `<article class="placement-card"><h3>${escapeHtml(item[0])}</h3><p>${escapeHtml(item[1])}</p></article>`).join("");
-      const crossroadsCards = c.crossroads.map((item) => `<a class="crossroads-card" href="${escapeHtml(this.chartUrl(item.placement))}" target="_top"><div><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.body)}</p></div><span>${escapeHtml(item.linkLabel)}</span></a>`).join("");
+      const crossroadsCards = c.crossroads.map((item) => `<a class="crossroads-card" href="${escapeHtml(this.chartUrl(item.placement))}" target="_blank" rel="noopener" data-mtys-route><div><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.body)}</p></div><span>${escapeHtml(item.linkLabel)}</span></a>`).join("");
 
       this.shadowRoot.innerHTML = `<style>${this.styles}</style><main class="page">
         <section class="hero"><div class="wrap hero-inner"><p class="eyebrow">${escapeHtml(p.hero.eyebrow)}</p><h1>${escapeHtml(p.hero.title)}</h1><p class="hero-copy">${escapeHtml(p.hero.body)}</p><a class="primary-button" href="#work-questions" data-action="explore">${escapeHtml(p.hero.cta)}</a></div></section>

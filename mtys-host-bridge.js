@@ -61,6 +61,11 @@
     brandedUrl,
     navigate,
     getRouteState: () => ({ ...routeState }),
+    consumeRouteState() {
+      const state = { ...routeState };
+      routeState = {};
+      return state;
+    },
     on(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);

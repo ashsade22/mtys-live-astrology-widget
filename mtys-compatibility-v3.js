@@ -18,6 +18,7 @@
       if (message.type === "host-ready") hostReady = true;
       if (message.type === "route-state" && message.query && typeof message.query === "object") {
         routeState = { ...message.query };
+        window.dispatchEvent(new CustomEvent("mtys:route-state"));
       }
     });
 
@@ -74,6 +75,7 @@
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleClick = this.handleClick.bind(this);
       this.handlePopState = this.handlePopState.bind(this);
+      this.handleRouteState = this.handleRouteState.bind(this);
     }
 
     connectedCallback() {
@@ -84,6 +86,7 @@
         </style>
         <div class="loading" role="status">Loading Compatibility</div>
       `;
+      window.addEventListener("mtys:route-state", this.handleRouteState);
       this.load();
     }
 
@@ -91,6 +94,7 @@
       this.shadowRoot.removeEventListener("submit", this.handleSubmit);
       this.shadowRoot.removeEventListener("click", this.handleClick);
       window.removeEventListener("popstate", this.handlePopState);
+      window.removeEventListener("mtys:route-state", this.handleRouteState);
     }
 
     async load() {
@@ -192,6 +196,10 @@
     }
 
     handlePopState() {
+      this.render();
+    }
+
+    handleRouteState() {
       this.render();
     }
 

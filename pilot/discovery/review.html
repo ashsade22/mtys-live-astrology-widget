@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Know Your Chart | Controlled MTYS Prototype</title></head>
+<body style="margin:0;background:#f7f0eb"><aside style="padding:16px;font:16px Arial;color:#0b2534;background:#efe1dc"><strong>Controlled component review</strong><p>These controls change the component width, not the browser viewport or Wix shell.</p><label>Component width <select id="review-width"><option>760</option><option>430</option><option>390</option><option>375</option><option>320</option></select></label></aside><header style="padding:16px;font:16px Arial;color:#0b2534"><h1>Know Your Chart</h1><p>Sync your life with the stars.</p><p>Controlled prototype. Not published.</p></header><div class="viewport" style="width:760px;max-width:100%;margin:auto;container-type:inline-size"><main data-pilot-root><p role="status">Loading your exploration</p></main></div><noscript>This exploration requires JavaScript.</noscript><script>const M2=(()=>{
+const SIGNS = Object.freeze('aries taurus gemini cancer leo virgo libra scorpio sagittarius capricorn aquarius pisces'.split(' '));
+const VERSION = '20261019-controlled-2';
+const TTL = 86400000;
+const STORAGE_KEY = 'mtys:d1719827-2c26-4bba-979a-b4cd4793d609:discovery:v2';
+const FIELDS = ['version','id','createdAt','expiresAt','revision','moonRevision','mercuryRevision','mode','step','panel','moon','mercury','moonConfirmed','mercuryConfirmed'];
+function createState(now = Date.now(), id = crypto.randomUUID(), mode = 'personal') {
+  return {version:VERSION,id,createdAt:now,expiresAt:now+TTL,revision:0,moonRevision:0,mercuryRevision:0,mode,step:1,panel:'main',moon:null,mercury:null,moonConfirmed:false,mercuryConfirmed:false};
+}
+function validState(s, now = Date.now(), allowExpired = false) {
+  if (!s || typeof s !== 'object' || Array.isArray(s) || Object.keys(s).length !== FIELDS.length || Object.keys(s).some(k=>!FIELDS.includes(k))) return false;
+  if (s.version!==VERSION || typeof s.id!=='string' || !/^[a-zA-Z0-9-]{16,64}$/.test(s.id) || !['personal','example'].includes(s.mode)) return false;
+  if (![s.createdAt,s.expiresAt,s.revision,s.moonRevision,s.mercuryRevision,s.step].every(Number.isSafeInteger) || s.createdAt<0 || s.createdAt>now || s.expiresAt!==s.createdAt+TTL) return false;
+  if(![s.moonRevision,s.mercuryRevision].every(n=>n>=0&&n<=10000)||!['main','review','reset','unknown-moon','unknown-mercury'].includes(s.panel))return false;
+  if ((!allowExpired && now>=s.expiresAt) || s.revision<0 || s.revision>10000 || s.step<1 || s.step>5) return false;
+  if (![s.moon,s.mercury].every(v=>v===null || SIGNS.includes(v)) || typeof s.moonConfirmed!=='boolean' || typeof s.mercuryConfirmed!=='boolean') return false;
+  if ((s.moonConfirmed&&!s.moon) || (s.mercuryConfirmed&&!s.mercury) || (s.step>1&&!s.moonConfirmed) || (s.step>3&&!s.mercuryConfirmed)) return false;
+  if (s.mode==='example' && ((s.moon && s.moon!=='cancer') || (s.mercury && s.mercury!=='gemini'))) return false;
+  return true;
+}
+function commitSelection(s, placement, sign) {
+  if (!validState(s,Math.max(Date.now(),s?.createdAt||0),true) || (placement==='mercury'&&!s.moonConfirmed)) throw new Error('invalid_state');
+  if (!['moon','mercury'].includes(placement) || !SIGNS.includes(sign)) throw new Error('invalid_selection');
+  if (s.mode==='example' && sign!==(placement==='moon'?'cancer':'gemini')) throw new Error('invalid_selection');
+  const changed=s[placement]!==sign;
+  const counter=placement+'Revision';
+  const next={...s,[placement]:sign,[placement+'Confirmed']:true,revision:s.revision+(changed||!s[placement+'Confirmed']?1:0),[counter]:s[counter]+(changed||s[counter]===0?1:0),panel:'main',step:placement==='moon'?2:4};
+  if (placement==='moon' && changed){next.mercuryConfirmed=false;if(s.mercury)next.mercuryRevision++;}
+  return next;
+}
+function parseCheckpoint(raw, now) {
+  if (typeof raw!=='string' || new TextEncoder().encode(raw).length>4096) return null;
+  try {const s=JSON.parse(raw);return validState(s,now)?s:null;} catch {return null;}
+}
+function recovery(storage, now, fresh) {
+  let available=true, restored=false, reason='new'; let state=fresh();
+  try {const raw=storage.getItem(STORAGE_KEY);if(raw!==null){const parsed=parseCheckpoint(raw,now);if(parsed){state=parsed;restored=true;reason='restored';}else {storage.removeItem(STORAGE_KEY);reason='invalid_checkpoint';}}}
+  catch {available=false;reason='storage_unavailable';}
+  return {state,available,restored,reason};
+}
+function persist(storage,s,now=Date.now()) {
+  try {if(now>=s.expiresAt)storage.removeItem(STORAGE_KEY);else storage.setItem(STORAGE_KEY,JSON.stringify(s));return true;} catch {return false;}
+}
+function historySnapshot(s) {return {version:1,state:{...s}};}
+function restoreHistory(snapshot,current,now=Date.now()) {
+  if (!snapshot || Object.keys(snapshot).sort().join(',')!=='state,version' || snapshot.version!==1 || !validState(snapshot.state,now) || snapshot.state.id!==current.id) return null;
+  return {...snapshot.state};
+}
+
+return {SIGNS,VERSION,TTL,STORAGE_KEY,createState,validState,commitSelection,parseCheckpoint,recovery,persist,historySnapshot,restoreHistory};})();
+const M4=(()=>{
+const signs = [
+  "Aries",
+  "Taurus",
+  "Gemini",
+  "Cancer",
+  "Leo",
+  "Virgo",
+  "Libra",
+  "Scorpio",
+  "Sagittarius",
+  "Capricorn",
+  "Aquarius",
+  "Pisces"
+];
+
+const siteCopy = {
+  hero: {
+    eyebrow: "KNOW YOUR CHART",
+    title: "Your Sun sign is only part of the story.",
+    body: "Your chart can explain a lot about how you think, react, connect, communicate, and go after what you want."
+  },
+  placementIntro: "Start with the part of life you want to understand, then choose a sign to see how it tends to show up in real life.",
+  deeper: {
+    eyebrow: "GO DEEPER",
+    title: "There is more to explore when you are ready.",
+    body: "These layers add context to the six placements above. You do not need to learn them all at once.",
+    items: [
+      {
+        title: "Houses",
+        kicker: "Where life gets personal",
+        body: "The part of life where a placement tends to show up most clearly."
+      },
+      {
+        title: "Elements",
+        kicker: "Your natural operating style",
+        body: "Why some people lead with action, logic, practicality, or feeling."
+      },
+      {
+        title: "Modalities",
+        kicker: "How you handle movement and change",
+        body: "Whether you tend to start, stabilize, or adapt when life shifts."
+      },
+      {
+        title: "Aspects",
+        kicker: "Where different parts of you meet",
+        body: "How different parts of you support, challenge, and influence each other."
+      }
+    ]
+  },
+  together: {
+    eyebrow: "PUTTING IT TOGETHER",
+    title: "The chart gets personal when the pieces start talking to each other.",
+    body: "Knowing your individual placements gives you useful pieces. Seeing how they work together is what makes the chart personal. Your Moon can need one thing while your Mars wants to act another way. Your Venus may notice attention that your Rising does not know how to ask for. Those differences are often what make the chart sound like your real life."
+  },
+  product: {
+    eyebrow: "WHAT MAKES YOU TICK?",
+    title: "Your chart makes more sense together.",
+    body: "Knowing your individual placements is useful. Seeing how they interact is what makes the chart personal and shows how you think, feel, relate, react, and make decisions as one whole person.",
+    cta: "See how your chart works together",
+    note: "What Makes You Tick is in development. For now, start with the six placements above."
+  }
+};
+
+const placements = {
+  sun: {
+    name: "Sun",
+    symbol: "☉",
+    card: "The part of you that feels most like you.",
+    cta: "Explore your Sun",
+    title: "Your sense of self, in real life",
+    intro: "Your Sun points to what feels true to you, what builds confidence, and the qualities you are here to express more fully.",
+    labels: ["What feels true to you", "Where confidence grows", "What you are becoming"],
+    signs: {
+      Aries: ["Acting on what matters instead of waiting for permission brings you back to yourself.", "Trusting your first instinct and learning from the result builds confidence.", "Growth looks like becoming more direct, brave, and willing to begin."],
+      Taurus: ["Steadiness, substance, and room to enjoy what you have built bring you back to yourself.", "Consistency builds your confidence more than speed ever could.", "You are becoming someone who knows what is worth protecting and what is not worth the strain."],
+      Gemini: ["A quick mind and an interesting conversation make you feel fully engaged with life.", "Your curiosity becomes a source of confidence when you treat it as a strength.", "You are learning to be more flexible, articulate, and comfortable holding more than one idea."],
+      Cancer: ["Caring deeply without pretending that nothing affects you feels honest and natural.", "Trusting your emotional read of a situation builds confidence.", "Your growth makes you more protective of the people and spaces that feel like home."],
+      Leo: ["Creating, contributing, and being seen for what you bring feels natural to you.", "Your confidence grows when attention follows honest self expression instead of performance.", "You are growing warmer, bolder, and more generous with your presence."],
+      Virgo: ["You feel most like yourself when you can make something clearer, stronger, or more useful.", "Confidence grows when you notice your progress instead of only the next correction.", "Becoming more discerning does not have to turn every improvement into a test of your worth."],
+      Libra: ["You feel most like yourself when there is room for beauty, connection, and a fair exchange.", "Confidence grows when you make a choice without waiting for universal agreement.", "You are growing more comfortable naming what you want while still considering other people."],
+      Scorpio: ["You feel most like yourself when things are honest enough to matter.", "Confidence grows when you trust your depth without using control as protection.", "Growth means becoming more resilient, perceptive, and willing to let real change happen."],
+      Sagittarius: ["You feel most like yourself when life is expanding your perspective instead of shrinking your options.", "Confidence grows through experience and honest exploration.", "You are becoming more candid, hopeful, and committed to a direction that feels meaningful."],
+      Capricorn: ["Purposeful effort and a goal that matters help you recognize yourself.", "Confidence grows through earned competence and promises you keep to yourself.", "You are becoming more self directed, capable, and selective about the goals that deserve your time."],
+      Aquarius: ["Thinking independently and contributing something original feels true to who you are.", "Confidence grows when you stop editing your perspective to make it easier for everyone else.", "You are growing more inventive, principled, and comfortable standing slightly outside the crowd."],
+      Pisces: ["You feel most like yourself when imagination, empathy, and intuition have room to shape what you do.", "Confidence grows when sensitivity becomes information instead of something to hide.", "You are becoming more compassionate and creative while learning where you need clearer limits."]
+    }
+  },
+  moon: {
+    name: "Moon",
+    symbol: "☽",
+    card: "What you need emotionally and what helps you feel okay again.",
+    cta: "Find your Moon",
+    title: "What you need when feelings get real",
+    intro: "Your Moon describes your emotional needs, your instinctive reactions, and the version of you that appears when you feel safe or stretched thin.",
+    labels: ["What you need", "When stress hits", "What helps you reset"],
+    signs: {
+      Aries: ["You need honesty, movement, and the freedom to respond in the moment.", "Frustration can arrive fast, especially when you feel blocked or managed.", "A direct conversation or physical outlet helps the feeling move through instead of getting stuck."],
+      Taurus: ["You need steadiness, physical comfort, and time to settle into what you feel.", "Sudden changes can make you dig in, even when part of you knows the plan needs to shift.", "Familiar food, a calm space, and one manageable next step bring you back to yourself."],
+      Gemini: ["You need language for what you are feeling and someone who can stay curious with you.", "Stress can scatter your attention or keep your mind talking long after the moment has passed.", "Naming the feeling, changing the scene, or having a low pressure conversation helps you reset."],
+      Cancer: ["You need emotional safety, privacy, and people who notice what is happening beneath the surface.", "When overwhelmed, you may retreat or protect yourself before you explain what hurt.", "Home, trusted company, and permission to feel without fixing everything help you soften."],
+      Leo: ["You need warmth, loyalty, and affection that feels sincere and visible.", "Feeling ignored or dismissed can hurt more than you let on.", "Creative expression and time with someone who genuinely delights in you restore your warmth."],
+      Virgo: ["You need order, usefulness, and a sense that the problem can be handled.", "Stress can turn into overthinking, fixing, or being harder on yourself than the moment requires.", "A simple routine and one practical action help your nervous system believe things are manageable again."],
+      Libra: ["You need calm communication, mutual consideration, and a relationship climate that feels fair.", "Conflict can leave you focused on everyone else's reaction before you have named your own.", "Beauty, balance, and a conversation where both people are heard help you come back to center."],
+      Scorpio: ["You need trust, privacy, and emotional honesty that does not stop at the polite version.", "Stress can make you watchful, guarded, or determined to regain control.", "Time alone and one deeply trusted person help you process without feeling exposed."],
+      Sagittarius: ["You need space, perspective, and something ahead of you that feels hopeful.", "Stress can make you restless or eager to escape a feeling before it has said what it needs to say.", "Movement, humor, and a change in perspective help you feel possible again."],
+      Capricorn: ["You need reliability, respect, and enough structure to know where you stand.", "Under pressure, you may become self contained and handle everything before admitting you need support.", "A realistic plan and someone who helps without making you feel incapable let you exhale."],
+      Aquarius: ["You need breathing room, mental clarity, and relationships that respect your independence.", "Stress can send you into observation mode when other people want an immediate emotional response.", "Distance, perspective, and a conversation without pressure help you reconnect on your own terms."],
+      Pisces: ["You need gentleness, emotional permission, and time away from other people's noise.", "Stress can blur the line between your feelings and everyone else's.", "Music, sleep, water, creativity, and a clear boundary help you return to what is actually yours." ]
+    }
+  },
+  rising: {
+    name: "Rising",
+    symbol: "↑",
+    card: "How you naturally meet the world.",
+    cta: "Meet your Rising",
+    title: "How you meet the world",
+    intro: "Your Rising sign shapes first impressions, your approach to unfamiliar situations, and the way the rest of your chart is organized.",
+    labels: ["First impression", "In a new situation", "Your chart lens"],
+    signs: {
+      Aries: ["People often meet your directness and momentum first.", "You tend to learn by entering the situation and adjusting as you go.", "Your approach to life keeps bringing you back to courage, initiative, and learning when action is truly yours to take."],
+      Taurus: ["People often experience you as calm, measured, and difficult to rush.", "You look for solid ground before you commit.", "Stability, values, and a sustainable pace shape the way you approach life."],
+      Gemini: ["People often notice your quick mind, curiosity, and responsiveness.", "You gather information, ask questions, and keep your options open until the picture makes sense.", "Communication, variety, and learning how ideas connect shape the way you move through life."],
+      Cancer: ["People may experience you as observant, caring, or careful about who gets close.", "You read the emotional temperature before deciding how much of yourself to show.", "Belonging, protection, and creating a secure base shape the way you move through life."],
+      Leo: ["People often notice your presence, warmth, or natural sense of occasion.", "You approach new settings by finding where you can contribute and be fully yourself.", "Creative courage, visibility, and heart led self expression shape your path."],
+      Virgo: ["People may see you as thoughtful, capable, and tuned into what needs attention.", "You observe the details and work out how to be useful before you fully relax.", "You move through life by noticing what can improve and building practical systems around it."],
+      Libra: ["People often meet your social awareness, style, and instinct for creating ease.", "You notice the people involved and look for the most balanced way to enter.", "Relationships and choice are central lessons, especially learning to keep the peace without losing yourself."],
+      Scorpio: ["People may experience you as private, focused, and harder to read than you realize.", "You assess trust and motive before you reveal much.", "Trust, transformation, and the line between protection and distance shape your path."],
+      Sagittarius: ["People often meet your openness, humor, and forward looking attitude first.", "You look for possibility and prefer to understand the wider context as you go.", "Exploration, meaning, and the freedom to keep growing shape your path."],
+      Capricorn: ["People may see you as composed, responsible, and aware of what the moment requires.", "You assess the goal, the expectations, and what will make the effort worthwhile.", "You move through life by building mastery, taking responsibility, and creating something with lasting value."],
+      Aquarius: ["People often notice your independence, originality, or slightly unexpected point of view.", "You observe the group before deciding how you want to participate.", "Ideas, community, and making room for a life that fits you matter more than convention."],
+      Pisces: ["People may experience you as gentle, receptive, and responsive to the mood around you.", "You feel your way into new situations before deciding what they mean.", "Your path asks you to stay open and imaginative without losing your footing." ]
+    }
+  },
+  mercury: {
+    name: "Mercury",
+    symbol: "☿",
+    card: "How you think, communicate, and make sense of things.",
+    cta: "Understand your Mercury",
+    title: "How you think, talk, and argue",
+    intro: "Mercury shows how you process information, make decisions, explain your point, and respond when a conversation gets frustrating.",
+    labels: ["How your mind works", "In conversation", "What gets through to you"],
+    signs: {
+      Aries: ["Your mind moves quickly toward the point and prefers a clear next step.", "You speak directly and can argue before everyone else has finished framing the issue.", "Be concise, honest, and willing to address the real problem without circling it."],
+      Taurus: ["You process at your own pace and trust ideas that hold up in practical life.", "You choose words carefully and may become fixed when someone pushes before you are ready.", "Give you time, concrete details, and a reason a new approach will actually work."],
+      Gemini: ["Your mind makes fast connections and stays engaged through variety.", "You think out loud, ask questions, and may change your wording as new information arrives.", "Keep the exchange responsive, specific, and open to more than one angle."],
+      Cancer: ["You process through memory, tone, and the emotional context around the facts.", "You hear what is said and how it was said, especially when trust is involved.", "Speak with care, acknowledge the feeling in the room, and do not use vulnerability as leverage."],
+      Leo: ["Your mind looks for the central story and the point that deserves attention.", "You communicate with conviction and want your contribution to be taken seriously.", "Be respectful, genuine, and clear about what you appreciate as well as what needs to change."],
+      Virgo: ["Your mind sorts, compares, and notices the detail that everyone else skipped.", "You communicate precisely and can become frustrated by vague answers or avoidable confusion.", "Bring useful facts, define the problem, and make room for a practical solution."],
+      Libra: ["Your mind compares perspectives and looks for language that people can meet inside.", "You communicate diplomatically, though too many competing considerations can slow a decision.", "Invite your opinion directly, keep the tone fair, and do not mistake thoughtfulness for agreement."],
+      Scorpio: ["Your mind looks beneath the obvious answer and remembers what does not add up.", "You speak selectively and prefer a real conversation to polite surface talk.", "Be honest, consistent, and prepared to discuss the motive as well as the facts."],
+      Sagittarius: ["Your mind looks for meaning, context, and the larger point.", "You communicate candidly and may prioritize truth over a perfectly softened delivery.", "Lead with the big picture, stay open to questions, and avoid trapping the conversation in tiny details."],
+      Capricorn: ["Your mind organizes information around usefulness, responsibility, and results.", "You communicate with purpose and have little patience for a conversation that goes nowhere.", "Bring a clear point, respect the time involved, and show how the idea can become workable."],
+      Aquarius: ["Your mind steps back, spots patterns, and reaches conclusions that may surprise people.", "You communicate independently and can detach when an exchange becomes emotionally crowded.", "Offer room to think, respect an unconventional angle, and engage the idea instead of demanding a standard response."],
+      Pisces: ["Your mind absorbs impressions, subtext, and possibilities that are difficult to reduce to one fact.", "You communicate through feeling, imagery, and intuition, though details can blur under pressure.", "Use gentle clarity, check what was understood, and allow space for an answer to take shape." ]
+    }
+  },
+  venus: {
+    name: "Venus",
+    symbol: "♀",
+    card: "The attention you notice, the affection that lands, and the chemistry that makes you lean in.",
+    cta: "Read your Venus",
+    title: "What makes affection feel real",
+    intro: "Venus can explain how you show interest, what attracts you, what makes you feel valued, and what quietly turns you off.",
+    labels: ["How interest shows", "What feels loving", "What turns you off"],
+    signs: {
+      Aries: ["Interest is obvious, energized, and willing to make the first move.", "Enthusiasm, honesty, and a little spark of pursuit make you feel wanted.", "Mixed signals, passivity, and affection that feels obligatory cool you down quickly."],
+      Taurus: ["Interest grows through presence, consistency, and attention to the senses.", "You feel loved through reliability, touch, comfort, and someone remembering what you enjoy.", "Being rushed, destabilized, or treated as an afterthought makes it hard to stay open."],
+      Gemini: ["Interest shows through conversation, teasing, curiosity, and frequent contact.", "Someone who engages your mind and keeps the connection alive gets your attention.", "Repetition without discovery and communication that feels heavy or controlling can flatten attraction."],
+      Cancer: ["Interest appears through care, attentiveness, and creating a feeling of familiarity.", "Feeling loved means having someone notice your needs and protect the private bond.", "Emotional carelessness, inconsistency, and making tenderness feel embarrassing are hard stops."],
+      Leo: ["Interest is warm, expressive, and hard to miss when you feel safe enough to show it.", "Genuine praise, loyalty, and open affection make the connection feel special.", "Indifference, stinginess, and being taken for granted drain the romance out of the room."],
+      Virgo: ["Interest shows through thoughtful help, close attention, and remembering the small details.", "Consideration, dependability, and someone willing to improve everyday life with you are what register as love.", "Sloppiness, empty promises, and avoidable drama make attraction feel like work."],
+      Libra: ["Interest appears through charm, shared taste, and making the interaction feel mutually enjoyable.", "You feel loved through consideration, romance, and a partner who treats the relationship as a true exchange.", "Rudeness, imbalance, and conflict handled without care quickly undermine the connection."],
+      Scorpio: ["Interest is focused, private, and stronger than the surface may reveal.", "Trust, loyalty, and emotionally present attention matter more than casual affection.", "Dishonesty, emotional games, and intimacy without depth make you pull back."],
+      Sagittarius: ["Interest shows through openness, humor, and an invitation into a bigger experience.", "You feel loved when there is honesty, freedom, and room to keep growing together.", "Possessiveness, narrow thinking, and relationships that make life feel smaller weaken attraction."],
+      Capricorn: ["Interest develops through respect, consistency, and seeing that someone means what they say.", "Reliable effort and a real place in someone's priorities make love feel solid.", "Flakiness, poor judgment, and promises without follow through make you question the whole connection."],
+      Aquarius: ["Interest often begins with friendship, originality, and a meeting of minds.", "You feel loved when your individuality is welcomed and closeness does not require constant sameness.", "Pressure, possessiveness, and rigid ideas about how a relationship should look create distance."],
+      Pisces: ["Interest shows through softness, imagination, and an instinct to meet someone in their inner world.", "You feel loved through empathy, romance, and moments that make ordinary life feel more meaningful.", "Cruelty, emotional bluntness, and a connection with no room for tenderness shut you down." ]
+    }
+  },
+  mars: {
+    name: "Mars",
+    symbol: "♂",
+    card: "What gets you moving, what frustrates you, and how you go after what you want.",
+    cta: "See your Mars",
+    title: "How you act when you really want something",
+    intro: "Mars speaks to motivation, desire, frustration, conflict, competition, and the kind of challenge that brings your drive online.",
+    labels: ["What motivates you", "When conflict starts", "What keeps your drive alive"],
+    signs: {
+      Aries: ["A clear goal, immediate challenge, or chance to take initiative gets you moving.", "You respond quickly and directly, then often cool down faster than people expect.", "Momentum, autonomy, and visible progress keep you engaged."],
+      Taurus: ["A goal with tangible value and enough time to build it properly earns your effort.", "You tolerate a lot before pushing back, but once a line is crossed you are difficult to move.", "A steady pace, physical stamina, and results you can see keep you committed."],
+      Gemini: ["Curiosity, variety, and a problem that gives your mind something to chase energize you.", "You argue with words, questions, and rapid shifts in perspective.", "Fresh input and more than one route forward keep boredom from draining your drive."],
+      Cancer: ["You act most decisively when something personal or someone you care about needs protection.", "Conflict can come out sideways if direct anger does not feel emotionally safe.", "A meaningful reason, supportive surroundings, and trust in your instincts sustain your effort."],
+      Leo: ["A chance to create, lead, or make a visible impact brings your confidence forward.", "You confront issues with pride and intensity, especially when respect is missing.", "Recognition, creative ownership, and a goal you can care about keep the fire alive."],
+      Virgo: ["A useful task, solvable problem, or clear way to improve something activates you.", "Frustration rises when people are careless, vague, or unwilling to do their part.", "Specific goals, strong systems, and evidence that your work matters keep you productive."],
+      Libra: ["You are motivated by collaboration, fairness, and a goal that improves the overall balance.", "You may delay open conflict while weighing every side, then become firm when the imbalance is undeniable.", "A capable partner and a clear sense of mutual effort keep you engaged."],
+      Scorpio: ["A high stakes goal, emotional truth, or challenge that requires total focus draws out your power.", "You rarely fight halfway and may hold your response until you understand the full situation.", "Privacy, trust, and work that allows real transformation keep your drive concentrated."],
+      Sagittarius: ["A meaningful challenge, larger horizon, or chance to test yourself gets you moving.", "You address conflict candidly and can become impatient with evasiveness or small arguments.", "Freedom, growth, and a goal that keeps opening new territory sustain your motivation."],
+      Capricorn: ["A serious objective, clear responsibility, or result worth earning brings out your endurance.", "You tend to stay controlled in conflict and focus on what will actually change the outcome.", "Structure, authority over your process, and measurable progress keep you going."],
+      Aquarius: ["An original problem, collective cause, or chance to challenge an outdated system energizes you.", "You may detach in conflict and defend the principle before addressing the emotion.", "Independence, experimentation, and work that improves the future keep your drive awake."],
+      Pisces: ["You are motivated by compassion, imagination, and work that feels connected to something meaningful.", "Conflict can feel draining, so anger may build quietly or emerge only when someone vulnerable is affected.", "Creative flow, emotional space, and flexible goals help your motivation return." ]
+    }
+  }
+};
+
+
+
+return {siteCopy,placements,signs};})();
+const M3=(()=>{
+const {placements,signs}=M4;
+
+const titleCase = key => signs.find(s=>s.toLowerCase()===key) || '';
+function placementContent(placement,sign) {
+  const source=placements[placement]; const name=titleCase(sign);
+  const lines=source?.signs[name];
+  return source && Array.isArray(lines) && lines.length===3 ? {title:source.title,labels:source.labels,lines:[...lines]} : null;
+}
+const EXAMPLE = Object.freeze({
+  moon:'cancer',mercury:'gemini',mode:'example',version:'approved-fictional-example-1',
+  headline:'You may explain the situation before naming the need.',
+  explanation:'One way these placements can combine is a wish for familiar care alongside a habit of talking things through. A detailed conversation might help you understand a feeling without making the request underneath it obvious.',
+  everyday:'You might describe why a changed plan bothered you when what you want is to know that time together still matters. The other person may answer the scheduling problem and miss that part.',
+  option:'Try naming what matters and making a request: “I was looking forward to seeing you. Could we choose another day now?”'
+});
+// The fictional example is not an approved personal ordered-pair library.
+function applicationContent(s) {
+  return s.mode==='example' && s.moon===EXAMPLE.moon && s.mercury===EXAMPLE.mercury && s.moonConfirmed && s.mercuryConfirmed ? EXAMPLE : null;
+}
+const COPY = Object.freeze({
+  opening:'What you need. How you say it.',
+  intro:'Explore your Moon and Mercury signs to see how your emotional needs and communication style may work together in relationships.',
+  moonBridgeTitle:'How do you put that need into words?',
+  moonBridge:'Your Moon sign offers one view of what helps you feel supported. Mercury adds how you think and communicate. Exploring both can help connect the need with the way you express it.',
+  mercuryBridgeTitle:'Now put the two together.',
+  mercuryBridge:'What helps you feel supported and how you express it may not look the same. See how your Moon and Mercury signs can work together in everyday conversations.',
+  scope:'This connects two placements in one person. It is not a full chart reading or a comparison with someone else.',
+  nextTitle:'Next: Explore your relationship patterns',
+  nextReason:'You have explored what helps you feel supported and how you put it into words. Next, notice how those patterns can show up in the way you give and receive care.',
+  return:'Come back whenever you want to explore another placement. No account needed.'
+});
+
+return {titleCase,placementContent,EXAMPLE,applicationContent,COPY,signs};})();
+const M5=(()=>{
+const {VERSION,TTL}=M2;
+const EVENTS=Object.freeze(['pilot_entered','moon_selection_confirmed','moon_insight_received','mercury_recommendation_shown','mercury_exploration_started','mercury_selection_confirmed','mercury_insight_received','relationship_application_started','relationship_application_received','recommendation_selected','example_mode_started','pilot_error','pilot_recovery_started','pilot_recovery_succeeded']);
+const STAGES=['moon_select','moon_insight','mercury_select','mercury_insight','relationship_application'];
+const EXTRA={pilot_entered:[],moon_selection_confirmed:['action_id'],moon_insight_received:['receipt_method'],mercury_recommendation_shown:['exposure_method'],mercury_exploration_started:['action_id'],mercury_selection_confirmed:['action_id'],mercury_insight_received:['receipt_method'],relationship_application_started:['action_id'],relationship_application_received:['receipt_method'],recommendation_selected:['action_id','destination_key'],example_mode_started:['action_id','start_stage'],pilot_error:['operation_id','reason_code','outcome','timing_bucket'],pilot_recovery_started:['operation_id','recovery_kind','trigger'],pilot_recovery_succeeded:['operation_id','recovery_kind','restored_stage','timing_bucket']};
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const REASONS=['load_timeout','content_load_failed','content_unavailable','embed_handshake_failed','bridge_message_rejected','state_invalid','stale_result_rejected','checkpoint_invalid','checkpoint_expired','storage_unavailable','recovery_failed'];
+const BASE={schema_version:'1.0',pilot_version:'1',build_version:VERSION,content_release:'controlled-example-v1',consent_state:'granted',policy_version:'prototype-qa-only',environment:'controlled_prototype',cohort_kind:'qa',storage_mode:'memory_only',device_class:'unknown',entry_source:'unknown'};
+const COMMON=['event_name','event_id','measurement_id','run_id','sequence_no','occurred_at','state_revision','moon_revision','mercury_revision','stage','mode','entry_mode',...Object.keys(BASE)];
+function validEvent(e){
+ if(!e||!EVENTS.includes(e.event_name)||Object.keys(e).length!==COMMON.length+EXTRA[e.event_name].length||Object.keys(e).some(k=>!COMMON.includes(k)&&!EXTRA[e.event_name].includes(k)))return false;
+ if(Object.entries(BASE).some(([k,v])=>e[k]!==v)||![e.event_id,e.measurement_id,e.run_id].every(v=>typeof v==='string'&&UUID.test(v)))return false;
+ if(![e.sequence_no,e.state_revision,e.moon_revision,e.mercury_revision].every(n=>Number.isSafeInteger(n)&&n>=0&&n<=100000)||e.sequence_no<1)return false;
+ if(![...STAGES,'entry','recommendation'].includes(e.stage)||![e.mode,e.entry_mode].every(m=>['live','example'].includes(m))||typeof e.occurred_at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(e.occurred_at)||!Number.isFinite(Date.parse(e.occurred_at)))return false;
+ for(const k of ['action_id','operation_id'])if(k in e&&!UUID.test(e[k]))return false;
+ for(const k of ['receipt_method','exposure_method'])if(k in e&&!['visible_1s','deliberate_action'].includes(e[k]))return false;
+ if('destination_key'in e&&e.destination_key!=='relationships')return false;
+ if('reason_code'in e&&!REASONS.includes(e.reason_code))return false;
+ if('outcome'in e&&!['retryable','unavailable','rejected','degraded'].includes(e.outcome))return false;
+ if('timing_bucket'in e&&!['under_1s','1_to_under_3s','3_to_under_10s','10_to_under_30s','30s_plus','not_applicable'].includes(e.timing_bucket))return false;
+ if('recovery_kind'in e&&!['retry_content','reconnect_embed','restore_same_tab'].includes(e.recovery_kind))return false;
+ if('trigger'in e&&!['user','bounded_auto'].includes(e.trigger))return false;
+ for(const k of ['start_stage','restored_stage'])if(k in e&&![...STAGES,'entry','recommendation'].includes(e[k]))return false;
+ return true;
+}
+function createAnalytics({sink=()=>{},uuid=()=>crypto.randomUUID(),clock=()=>Date.now(),permission='unavailable'}={}){
+ let allowed=permission==='granted',entered=false,measurement=null,run=null,entryMode=null,expires=0,seq=0;const seen=new Set();
+ return {
+  setConsent(value){if(value!==true){allowed=false;measurement=null;run=null;seen.clear();}return false;},
+  reset(){if(allowed&&measurement){run=uuid();seq=0;}},
+  emit(event,s,method='none',reason='none'){
+   if(!allowed||!EVENTS.includes(event)||(!entered&&event!=='pilot_entered'))return false;
+   if(!measurement){measurement=uuid();run=uuid();entryMode=s.mode==='example'?'example':'live';expires=clock()+TTL;}
+   if(clock()>=expires){allowed=false;measurement=null;run=null;seen.clear();return false;}
+   if(event==='pilot_entered'&&entered)return false;
+   const mode=s.mode==='example'?'example':'live';
+   const dependencies=event==='pilot_entered'?'entry':event==='example_mode_started'?'example':event.startsWith('moon_')||event.startsWith('mercury_recommendation')||event==='mercury_exploration_started'?s.moonRevision:s.moonRevision+':'+s.mercuryRevision;
+   const key=[run,event,mode,dependencies,reason].join('|');if(seen.has(key))return false;
+   const extra={};
+   if(EXTRA[event].includes('action_id'))extra.action_id=uuid();
+   if(EXTRA[event].includes('receipt_method'))extra.receipt_method=method==='view_threshold'?'visible_1s':'deliberate_action';
+   if(EXTRA[event].includes('exposure_method'))extra.exposure_method=method==='view_threshold'?'visible_1s':'deliberate_action';
+   if(event==='recommendation_selected')extra.destination_key='relationships';
+   if(event==='example_mode_started')extra.start_stage=STAGES[s.step-1];
+   if(event==='pilot_error')Object.assign(extra,{operation_id:uuid(),reason_code:reason,outcome:reason==='content_unavailable'?'unavailable':'rejected',timing_bucket:'not_applicable'});
+   if(event.startsWith('pilot_recovery'))return false; // Paired operation ownership awaits actual nonpublic mount.
+   const e={...BASE,event_name:event,event_id:uuid(),measurement_id:measurement,run_id:run,sequence_no:++seq,occurred_at:new Date(clock()).toISOString(),state_revision:s.revision,moon_revision:s.moonRevision,mercury_revision:s.mercuryRevision,stage:event==='pilot_entered'?'entry':STAGES[s.step-1],mode,entry_mode:entryMode,...extra};
+   if(!validEvent(e))return false;seen.add(key);if(event==='pilot_entered')entered=true;
+   try{sink(Object.freeze(e));return true;}catch{return false;}
+  }
+ };
+}
+// Foreground and intersection are both required. Explicit action is a separate receipt path.
+function observeReceipt(element,callback,{win=window,doc=document}={}) {
+  let timer=null,visible=false,done=false;
+  const clear=()=>{if(timer!==null)win.clearTimeout(timer);timer=null;};
+  const changed=()=>{clear();if(!done&&visible&&doc.visibilityState==='visible')timer=win.setTimeout(()=>{done=true;callback('view_threshold');},1000);};
+  const observer=new win.IntersectionObserver(entries=>{visible=entries.some(e=>e.target===element&&e.intersectionRatio>=.5);changed();},{threshold:[0,.5,1]});
+  observer.observe(element);doc.addEventListener('visibilitychange',changed);
+  return ()=>{clear();observer.disconnect();doc.removeEventListener('visibilitychange',changed);};
+}
+
+return {EVENTS,validEvent,createAnalytics,observeReceipt};})();
+const M6=(()=>{
+const styles = `
+.mtys-pilot{--ink:#0b2534;--blush:#efe1dc;--paper:#fffaf7;color:var(--ink);background:#f7f0eb;font:17px/1.6 Arial,sans-serif;max-width:760px;margin:auto;padding:24px;box-sizing:border-box;overflow-wrap:anywhere}
+.mtys-pilot *{box-sizing:border-box}.mtys-pilot [hidden]{display:none!important}
+.mtys-pilot h1{font-size:clamp(30px,5vw,36px);line-height:1.15}.mtys-pilot h2{font-size:28px;line-height:1.25}.mtys-pilot h3{font-size:21px;line-height:1.3}
+.mtys-pilot p{margin:0 0 18px}.mtys-pilot .stages{display:flex;gap:10px;list-style:none;padding:0;font-size:14px;flex-wrap:wrap}.mtys-pilot .stages li{padding:4px 0;border-bottom:3px solid transparent}.mtys-pilot [aria-current=step]{font-weight:700;border-color:var(--ink)!important}
+.mtys-pilot .badge,.mtys-pilot .context{background:var(--blush);padding:12px 16px;border-radius:8px;margin:16px 0}.mtys-pilot .basis{font-size:15px}.mtys-pilot .result{background:var(--paper);padding:24px;border-radius:12px;margin:20px 0}
+.mtys-pilot button,.mtys-pilot .action,.mtys-pilot summary,.mtys-pilot select{font:inherit;min-height:48px;min-width:48px;white-space:normal;overflow-wrap:anywhere}
+.mtys-pilot button,.mtys-pilot .action{display:inline-flex;justify-content:center;align-items:center;border:2px solid var(--ink);border-radius:8px;padding:12px 18px;background:var(--ink);color:white;text-decoration:none;cursor:pointer;text-align:center;line-height:1.4;max-width:100%;margin:4px 0}
+.mtys-pilot button.secondary,.mtys-pilot a.secondary{background:transparent;color:var(--ink)}.mtys-pilot button:disabled{opacity:.65;cursor:not-allowed}.mtys-pilot :focus-visible{outline:3px solid #9b3f39;outline-offset:4px}.mtys-pilot h2:focus{outline:3px solid #9b3f39;outline-offset:4px}
+.mtys-pilot fieldset{border:0;padding:0;margin:24px 0}.mtys-pilot legend{font-weight:700;margin-bottom:12px}.mtys-pilot .signs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mtys-pilot .sign-option{display:flex;align-items:center;gap:8px;padding:12px;min-height:52px;border:2px solid #63717a;border-radius:8px;cursor:pointer;background:var(--paper)}.mtys-pilot .sign-option:has(input:checked){background:var(--blush);border-color:var(--ink);font-weight:700}.mtys-pilot input{accent-color:var(--ink);width:20px;height:20px;flex-shrink:0}
+.mtys-pilot .actions{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:24px 0}.mtys-pilot details{margin:16px 0}.mtys-pilot summary{display:list-item;cursor:pointer;padding:10px 2px}.mtys-pilot .notice{border-left:4px solid var(--ink);padding:12px;background:var(--paper);margin:18px 0}.mtys-pilot .error{border-color:#9b3f39}.mtys-pilot .utilities{margin-top:32px;border-top:1px solid #63717a;padding-top:16px}.mtys-pilot pre{white-space:pre-wrap;font:13px/1.5 monospace;overflow-wrap:anywhere}.mtys-pilot .consent{display:flex;align-items:center;gap:12px;min-height:48px}.mtys-pilot .small{font-size:14px}
+@media(max-width:500px){.mtys-pilot{padding:20px 16px}.mtys-pilot .signs{grid-template-columns:repeat(2,minmax(0,1fr))}.mtys-pilot .result{padding:20px 16px}.mtys-pilot button,.mtys-pilot .action{width:100%}}
+@container(max-width:500px){.mtys-pilot{padding:20px 16px}.mtys-pilot .signs{grid-template-columns:repeat(2,minmax(0,1fr))}.mtys-pilot .result{padding:20px 16px}.mtys-pilot button,.mtys-pilot .action{width:100%}}
+@media(prefers-reduced-motion:reduce){.mtys-pilot *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+`;
+
+return {styles};})();
+const M1=(()=>{
+const {createState,recovery,persist,restoreHistory,historySnapshot,commitSelection,parseCheckpoint,STORAGE_KEY}=M2;
+const {signs,titleCase,placementContent,applicationContent,COPY}=M3;
+const {createAnalytics,observeReceipt}=M5;
+const {styles}=M6;
+const SITE='https://ashley35031.wixsite.com/more-than-your-sun-4';
+const node=(tag,text,props={})=>{const e=document.createElement(tag);if(text)e.textContent=text;Object.assign(e,props);return e;};
+function mountPilot(root,{storage,clock=()=>Date.now(),analyticsOptions={}}={}) {
+  const safeStorage=()=>storage ?? window.sessionStorage;
+  const checkpoint={getItem:k=>safeStorage().getItem(k),setItem:(k,v)=>safeStorage().setItem(k,v),removeItem:k=>safeStorage().removeItem(k)};
+  const recovered=recovery(checkpoint,clock(),()=>createState(clock()));
+  let state=recovered.state,storageOK=recovered.available,notice=recovered.restored?'Your temporary exploration has been recovered.':'',draft=null,cleanup=[],resetPending=false,expired=false;
+  let personalState=null;const branches=new Map([[state.mode,{...state}]]);const events=[];
+  try{const raw=checkpoint.getItem(STORAGE_KEY+':guest');personalState=parseCheckpoint(raw,clock());if(raw&&!personalState)checkpoint.removeItem(STORAGE_KEY+':guest');if(personalState)branches.set(personalState.mode,{...personalState});}catch{}
+  const analytics=createAnalytics({...analyticsOptions,sink:e=>{events.push(e);if(events.length>50)events.shift();analyticsOptions.sink?.(e);}});
+  root.classList.add('mtys-pilot');
+  const style=node('style',styles);root.before(style);
+  function save(){branches.set(state.mode,{...state});if(!persist(checkpoint,state,clock()))storageOK=false;}
+  function remember(push=true){
+    const snap=historySnapshot(state);
+    if(window.MTYSPilotTransport?.commit){window.MTYSPilotTransport.commit(snap,push);return;}
+    window.history[push?'pushState':'replaceState']({...window.history.state,mtysDiscovery:snap},'');
+  }
+  function emit(name,basis='none',reason='none'){return analytics.emit(name,state,basis,reason);}
+  function view(next,{push=true}={}){state=next;save();remember(push);render();}
+  function action(text,fn,secondary=false){const b=node('button',text,{type:'button',className:secondary?'secondary':''});b.addEventListener('click',fn);return b;}
+  function paragraph(parent,text,cls){const p=node('p',text,{className:cls||''});parent.append(p);return p;}
+  function receipt(which,basis){emit(which==='moon'?'moon_insight_received':which==='mercury'?'mercury_insight_received':'relationship_application_received',basis);}
+  function watch(el,fn){if('IntersectionObserver' in window)cleanup.push(observeReceipt(el,fn));}
+  function details(title,text){const d=node('details');d.append(node('summary',title),node('p',text));return d;}
+  function title(text){const h=node('h2',text,{tabIndex:-1});root.append(h);return h;}
+  function context(){const c=node('div','',{className:'context'});if(state.moon)paragraph(c,(state.mode==='example'?'Example Moon: ':'Moon: ')+titleCase(state.moon));if(state.mercury)paragraph(c,(state.mode==='example'?'Example Mercury: ':'Mercury: ')+titleCase(state.mercury));root.append(c);}
+  function leaveExample(){const prior=personalState;personalState=null;analytics.reset();view(prior&&clock()<prior.expiresAt?prior:createState(clock()),{push:true});}
+  function unknown(placement){return action("I don't know my "+(placement==='moon'?'Moon':'Mercury')+' sign',()=>view({...state,panel:'unknown-'+placement}),true);}
+  function reviewPanel(){
+    context();title('Review my choices');let choice=null;
+    const field=node('fieldset');field.append(node('legend','Which choice would you like to review?'));
+    const go=action('Continue',()=>view({...state,panel:'main',step:choice==='moon'?1:3}));go.disabled=true;
+    for(const placement of state.step===2?['moon']:['moon','mercury']){const label=node('label','',{className:'sign-option'}),radio=node('input','',{type:'radio',name:'review-placement',value:placement});radio.addEventListener('change',()=>{choice=placement;go.disabled=false;});label.append(radio,document.createTextNode(placement==='moon'?'Moon':'Mercury'));field.append(label);}
+    root.append(field,go,action('Keep result',()=>view({...state,panel:'main'}),true));
+    root.append(details('Start again','Clear the temporary guest and example choices.'));
+    const box=root.lastElementChild;
+    if(box)box.append(action('Start again',()=>view({...state,panel:'reset'}),true));
+    else root.append(action('Start again',()=>view({...state,panel:'reset'}),true));
+  }
+  function panelView(){
+    if(state.panel==='review'){reviewPanel();return;}
+    if(state.panel==='reset'){title('Clear your temporary choices?');paragraph(root,'This clears the guest and example exploration.');root.append(action('Clear choices',reset),action('Keep exploring',()=>view({...state,panel:'review'}),true));return;}
+    const placement=state.panel==='unknown-moon'?'Moon':'Mercury';title("Don't know your "+placement+' sign?');
+    paragraph(root,'Your '+placement+' sign can differ from your Sun sign. Please do not guess. No birth details are needed.');
+    if(placement==='Mercury'&&state.moonConfirmed){const data=placementContent('moon',state.moon);context();root.append(node('h3','Your Moon insight'));for(let i=0;i<data.lines.length;i++){root.append(node('h3',data.labels[i]));paragraph(root,data.lines[i]);}}
+    root.append(node('a','Back to Know Your Chart',{href:SITE+'/know-your-chart',className:'action',target:'_top'}),action('Explore the fictional example',startExample,true));
+  }
+  function selectView(placement){
+    const moon=placement==='moon',name=moon?'Moon':'Mercury',example=state.mode==='example';
+    if(!moon)context();title(moon?COPY.opening:'What is your Mercury sign?');
+    if(moon)paragraph(root,COPY.intro);else paragraph(root,'Now explore how you put your needs into words.');
+    const field=node('fieldset');field.append(node('legend',example?'Fictional '+name+' sign':'Your '+name+' sign'));
+    draft=example?(moon?'cancer':'gemini'):state[placement];
+    const go=action(example?'See the example '+name+' insight':'See my '+name+' insight',()=>{
+      if(!draft)return;state=commitSelection(state,placement,draft);emit(moon?'moon_selection_confirmed':'mercury_selection_confirmed');view(state);
+    });go.disabled=!draft;
+    if(example)paragraph(field,name+' in '+titleCase(draft)+'. Fixed fictional placement.');
+    else{const grid=node('div','',{className:'signs'});for(const sign of signs){const key=sign.toLowerCase(),label=node('label','',{className:'sign-option'}),input=node('input','',{type:'radio',name:placement,value:key,checked:draft===key});input.addEventListener('change',()=>{draft=key;go.disabled=false;});label.append(input,document.createTextNode(sign));grid.append(label);}field.append(grid);if(draft)paragraph(field,'Your previous selection. Confirm it or choose another sign.','basis');}
+    root.append(field,go,example?action('Leave example',leaveExample,true):unknown(placement));
+  }
+  function resultView(placement){
+    const moon=placement==='moon',name=moon?'Moon':'Mercury',data=placementContent(placement,state[placement]);context();
+    const heading=title((state.mode==='example'?'Example ':'Your ')+name+' insight');
+    if(!data){showUnavailable('This placement insight is not available. Your selection is still here.');return;}
+    paragraph(root,state.mode==='example'?'Fictional example. This is not your placement.':'Based on the '+name+' sign you selected.','basis');
+    const card=node('section','',{className:'result','aria-label':name+' insight'});card.setAttribute('aria-label',name+' insight');
+    for(let i=0;i<data.lines.length;i++){card.append(node('h3',data.labels[i]));paragraph(card,data.lines[i]);}
+    root.append(card,details('Why this insight','This explores one selected placement. Your full chart adds context.'));
+    root.append(node('h3',moon?COPY.moonBridgeTitle:COPY.mercuryBridgeTitle));paragraph(root,moon?COPY.moonBridge:COPY.mercuryBridge);
+    const next=action(state.mode==='example'?(moon?'Explore the example communication style':'See how the example connects in relationships'):(moon?'Explore my communication style':'See how these connect in relationships'),()=>{
+      receipt(placement,'explicit_interaction');
+      if(moon){emit('mercury_recommendation_shown','explicit_interaction');emit('mercury_exploration_started');view({...state,step:3});}
+      else {emit('relationship_application_started');view({...state,step:5});}
+    });root.append(next,state.mode==='example'?action('Leave example',leaveExample,true):action(moon?'Review my choice':'Review my choices',()=>view({...state,panel:'review'}),true));
+    watch(card,basis=>receipt(placement,basis));if(moon)watch(next,basis=>emit('mercury_recommendation_shown',basis));heading.focus({preventScroll:true});
+  }
+  function showUnavailable(text){const error=node('div','',{className:'notice error'});error.setAttribute('role','status');paragraph(error,text);root.append(error);emit('pilot_error','none','content_unavailable');}
+  function applicationView(){
+    context();const heading=title(state.mode==='example'?'Example needs in conversation':'Your needs in conversation'),data=applicationContent(state);
+    if(!data){showUnavailable('This combination is not available in this controlled prototype. Your Moon and Mercury insights remain available.');root.append(action('Return to Mercury insight',()=>view({...state,step:4})),action('Review my choices',()=>view({...state,panel:'review'}),true));heading.focus({preventScroll:true});return;}
+    paragraph(root,'Fictional example. Based on an invented Cancer Moon and Gemini Mercury.','basis');
+    const card=node('section','',{className:'result'});card.setAttribute('aria-label','Combined relationship application');card.append(node('h3',data.headline));paragraph(card,data.explanation);card.append(node('h3','In a relationship'));paragraph(card,data.everyday);card.append(node('h3','Something to try'));paragraph(card,data.option);paragraph(card,COPY.scope,'basis');root.append(card);
+    root.append(node('h3',COPY.nextTitle));paragraph(root,COPY.nextReason);
+    const link=node('a','Explore relationship patterns',{href:SITE+'/relationships',className:'action',target:'_top'});link.addEventListener('click',e=>{receipt('application','explicit_interaction');emit('recommendation_selected');if(window.MTYSPilotTransport?.navigate){e.preventDefault();window.MTYSPilotTransport.navigate();}});root.append(link);
+    root.append(state.mode==='example'?action('Leave example',leaveExample,true):action('Review my choices',()=>view({...state,panel:'review'}),true));paragraph(root,COPY.return);
+    watch(card,basis=>receipt('application',basis));heading.focus({preventScroll:true});
+  }
+  function startExample(){if(state.mode!=='example'){personalState={...state};try{checkpoint.setItem(STORAGE_KEY+':guest',JSON.stringify(personalState));}catch{storageOK=false;}}analytics.reset();state=createState(clock(),crypto.randomUUID(),'example');emit('example_mode_started');view(state);}
+  function reset(){analytics.reset();personalState=null;branches.clear();try{checkpoint.removeItem(STORAGE_KEY+':guest');}catch{}resetPending=false;expired=false;notice='Your temporary exploration has been cleared.';view(createState(clock()),{push:false});}
+  function render(){
+    cleanup.forEach(f=>f());cleanup=[];root.replaceChildren();
+    if(state.mode==='example')root.append(node('div','Example exploration',{className:'badge'}));
+    const stages=node('ol','',{className:'stages'});stages.setAttribute('aria-label','Discovery stages');for(const [i,label]of ['Emotional needs','Communication','Together'].entries()){const li=node('li',label);if(i===(state.step<3?0:state.step<5?1:2))li.setAttribute('aria-current','step');stages.append(li);}root.append(stages);
+    if(notice)paragraph(root,notice,'notice');
+    if(!storageOK)paragraph(root,'This exploration works here, but refresh recovery is unavailable in this browser.','notice');
+    if(state.panel!=='main')panelView();else if(state.step===1)selectView('moon');else if(state.step===2)resultView('moon');else if(state.step===3)selectView('mercury');else if(state.step===4)resultView('mercury');else applicationView();
+    const inspect=details('Prototype measurement status','Measurement is disabled. No approved consent mapping or collector is connected. Test hooks are inspected through automated QA only.');root.append(inspect);
+    window.MTYSPilotTransport?.resize(root.getBoundingClientRect().height);
+    const focusTarget=root.querySelector?.('h2');focusTarget?.focus?.({preventScroll:true});focusTarget?.scrollIntoView?.({block:'start',behavior:'instant'});
+  }
+  function expireOnResume(){if(clock()>=state.expiresAt){try{checkpoint.removeItem(STORAGE_KEY);if(personalState&&clock()>=personalState.expiresAt){personalState=null;checkpoint.removeItem(STORAGE_KEY+':guest');}}catch{}expired=true;notice='Temporary recovery has expired. Your currently viewed result remains here until you leave or start again.';render();}}
+  function pop(event){const incoming=event.state?.mtysDiscovery;const binding=branches.get(incoming?.state?.mode)||state;const candidate=restoreHistory(incoming,binding,clock());if(candidate){state=candidate;notice='';save();render();}else{emit('pilot_error','none','state_invalid');state=createState(clock());notice='That temporary exploration is no longer available. Please choose your Moon sign.';save();remember(false);render();}}
+  function resume(){if(document.visibilityState==='visible')expireOnResume();}
+  window.addEventListener('popstate',pop);document.addEventListener('visibilitychange',resume);window.addEventListener('pageshow',expireOnResume);
+  const observer=new ResizeObserver(()=>window.MTYSPilotTransport?.resize(root.getBoundingClientRect().height));observer.observe(root);
+  save();remember(false);render();
+  return {destroy(){cleanup.forEach(f=>f());observer.disconnect();window.removeEventListener('popstate',pop);document.removeEventListener('visibilitychange',resume);window.removeEventListener('pageshow',expireOnResume);style.remove();},getState:()=>({...state})};
+}
+
+return {mountPilot};})();
+const M7=(()=>{
+const {validState}=M2;
+const PARENT_ORIGINS=Object.freeze(['https://ashley35031.wixsite.com','https://ashley35031-more-than-your-sun-4.editor.wix.com']);
+const CHILD_ORIGIN='https://ashsade22.github.io';
+const CHILD_PATH='/mtys-live-astrology-widget/pilot/discovery/preview.html';
+function validMessage(m,now=Date.now()){
+  if(!m||typeof m!=='object'||Array.isArray(m))return false;
+  try{if(new TextEncoder().encode(JSON.stringify(m)).length>8192)return false;}catch{return false;}
+  if(m.source!=='mtys-discovery'||m.v!==1)return false;
+  const fields={ready:['source','v','type'],commit:['source','v','type','snapshot','push'],restore:['source','v','type','snapshot'],resize:['source','v','type','height'],navigate:['source','v','type'],ack:['source','v','type']};
+  if(!fields[m.type]||Object.keys(m).length!==fields[m.type].length||Object.keys(m).some(k=>!fields[m.type].includes(k)))return false;
+  if(m.type==='commit'||m.type==='restore'){
+    if(!m.snapshot||Object.keys(m.snapshot).sort().join(',')!=='state,version'||m.snapshot.version!==1||!validState(m.snapshot.state,now))return false;
+    if(m.type==='commit'&&typeof m.push!=='boolean')return false;
+  }
+  return m.type!=='resize'||(Number.isSafeInteger(m.height)&&m.height>=300&&m.height<=12000);
+}
+function acceptedFrame(frame,source){
+  try{const u=new URL(frame.src);return frame.contentWindow===source&&u.origin===CHILD_ORIGIN&&u.pathname===CHILD_PATH&&!u.search&&!u.hash;}catch{return false;}
+}
+function installChildTransport(win=window){
+  if(win.parent===win)return null;
+  let parentOrigin=null,ready=false,pending=null,lastHeight=null,timer=null,attempts=0;
+  const send=message=>{if(parentOrigin)win.parent.postMessage({source:'mtys-discovery',v:1,...message},parentOrigin);};
+  const onMessage=e=>{
+    if(e.source!==win.parent||!PARENT_ORIGINS.includes(e.origin)||!validMessage(e.data))return;
+    parentOrigin=e.origin;
+    if(e.data.type==='ack'){ready=true;if(timer!==null)win.clearTimeout(timer);if(pending){send({...pending,push:false});pending=null;}if(lastHeight!==null)send({type:'resize',height:lastHeight});}
+    if(e.data.type==='restore')win.dispatchEvent(new PopStateEvent('popstate',{state:{mtysDiscovery:e.data.snapshot}}));
+  };
+  win.addEventListener('message',onMessage);
+  // Send only a no-data handshake to the two specifically approved origins.
+  function hello(){if(ready||attempts++>=20)return;for(const origin of PARENT_ORIGINS)win.parent.postMessage({source:'mtys-discovery',v:1,type:'ready'},origin);timer=win.setTimeout(hello,250);}
+  hello();
+  return {commit(snapshot,push){const m={type:'commit',snapshot,push};if(ready)send(m);else{pending=m;win.history[push?'pushState':'replaceState']({...win.history.state,mtysDiscovery:snapshot},'');}},resize(height){lastHeight=Math.min(12000,Math.max(300,Math.ceil(height)));if(ready)send({type:'resize',height:lastHeight});},navigate(){if(ready)send({type:'navigate'});else win.location.assign('https://ashley35031.wixsite.com/more-than-your-sun-4/relationships');},destroy(){if(timer!==null)win.clearTimeout(timer);win.removeEventListener('message',onMessage);}};
+}
+function installHostBridge(win=window,doc=document){
+  const hostURL=new URL(win.location.href);
+  if(!PARENT_ORIGINS.includes(hostURL.origin)||!hostURL.pathname.endsWith('/know-your-chart'))return ()=>{};
+  const peers=new Set(),retiredIds=new Set();let latest=null;
+  const send=(source,m)=>source.postMessage({source:'mtys-discovery',v:1,...m},CHILD_ORIGIN);
+  const onMessage=e=>{
+    if(e.origin!==CHILD_ORIGIN||!validMessage(e.data))return;
+    const frame=Array.from(doc.querySelectorAll('iframe')).find(f=>acceptedFrame(f,e.source));if(!frame)return;
+    const m=e.data;
+    if(m.type==='ready'){peers.add(e.source);send(e.source,{type:'ack'});return;}
+    if(!peers.has(e.source))return;
+    if(m.type==='commit'){
+      const current=win.history.state?.mtysDiscovery?.state;
+      if(retiredIds.has(m.snapshot.state.id))return;
+      if(current&&current.id!==m.snapshot.state.id&&current.mode===m.snapshot.state.mode)retiredIds.add(current.id);
+      if(current&&current.id===m.snapshot.state.id&&m.snapshot.state.revision<current.revision)return;
+      latest=m.snapshot;
+      const state={...win.history.state,mtysDiscovery:m.snapshot};
+      const url=new URL(win.location.href);for(const key of ['sign','placement','you','them'])url.searchParams.delete(key);
+      win.history[m.push?'pushState':'replaceState'](state,'',url);
+    }
+    if(m.type==='resize'){frame.style.height=m.height+'px';frame.style.width='100%';frame.setAttribute('scrolling','no');}
+    if(m.type==='navigate')win.location.assign('https://ashley35031.wixsite.com/more-than-your-sun-4/relationships');
+  };
+  const back=()=>{let snap=win.history.state?.mtysDiscovery;if(snap?.state&&retiredIds.has(snap.state.id)){snap=latest;win.history.replaceState({...win.history.state,mtysDiscovery:snap},'');}if(validMessage({source:'mtys-discovery',v:1,type:'restore',snapshot:snap}))for(const peer of peers)if(Array.from(doc.querySelectorAll('iframe')).some(f=>acceptedFrame(f,peer)))send(peer,{type:'restore',snapshot:snap});};
+  win.addEventListener('message',onMessage);win.addEventListener('popstate',back);
+  return ()=>{win.removeEventListener('message',onMessage);win.removeEventListener('popstate',back);peers.clear();};
+}
+
+return {PARENT_ORIGINS,CHILD_ORIGIN,CHILD_PATH,validMessage,acceptedFrame,installChildTransport,installHostBridge};})();
+const M0=(()=>{
+const {mountPilot}=M1;
+const {installChildTransport}=M7;
+window.MTYSPilotTransport=installChildTransport();
+const root=document.querySelector('[data-pilot-root]');
+try{mountPilot(root);}catch{
+  root.textContent='This exploration could not load. Please refresh to try again. No birth details are needed.';
+  root.setAttribute('role','alert');
+}
+
+return {};})();</script><script>document.getElementById("review-width").addEventListener("change",e=>{document.querySelector(".viewport").style.width=e.target.value+"px";});</script></body></html>

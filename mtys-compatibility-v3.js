@@ -1,64 +1,94 @@
-(() => {
-  if (!window.MTYSBridge) {
-    const WIX_ORIGIN = "https://ashley35031.wixsite.com";
-    const SITE_BASE = `${WIX_ORIGIN}/more-than-your-sun-4`;
-    let hostReady = false;
-    let routeState = {};
-
-    const postToHost = (message) => {
-      if (window.parent !== window) {
-        window.parent.postMessage({ source: "mtys-widget", ...message }, WIX_ORIGIN);
-      }
-    };
-
-    window.addEventListener("message", (event) => {
-      if (event.source !== window.parent || event.origin !== WIX_ORIGIN) return;
-      const message = event.data;
-      if (!message || message.source !== "mtys-host") return;
-      if (message.type === "host-ready") hostReady = true;
-      if (message.type === "route-state" && message.query && typeof message.query === "object") {
-        routeState = { ...message.query };
-        window.dispatchEvent(new CustomEvent("mtys:route-state"));
-      }
-    });
-
-    window.MTYSBridge = {
-      brandedUrl(path, query = {}) {
-        const url = new URL(path, `${SITE_BASE}/`);
-        Object.entries(query).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, String(value));
-        });
-        return url.href;
-      },
-      navigate(event, href) {
-        if (!hostReady || window.parent === window) return false;
-        event.preventDefault();
-        const url = new URL(href, `${SITE_BASE}/`);
-        postToHost({
-          type: "navigate",
-          path: url.pathname.replace("/more-than-your-sun-4", "") || "/",
-          query: Object.fromEntries(url.searchParams.entries()),
-          hash: url.hash
-        });
-        return true;
-      },
-      consumeRouteState() {
-        const state = { ...routeState };
-        routeState = {};
-        return state;
-      }
-    };
-
-    let readyAttempts = 0;
-    const announceReady = () => {
-      if (hostReady || readyAttempts >= 20) return;
-      readyAttempts += 1;
-      postToHost({ type: "ready" });
-      window.setTimeout(announceReady, 250);
-    };
-    announceReady();
+(function () {
+  if (window.MTYSBridge) return;
+  const WIX_ORIGIN = "https://ashley35031.wixsite.com";
+  const SITE_BASE = `${WIX_ORIGIN}/more-than-your-sun-4`;
+  const signs = new Set("aries taurus gemini cancer leo virgo libra scorpio sagittarius capricorn aquarius pisces".split(" "));
+  const placements = new Set("sun moon rising mercury venus mars".split(" "));
+  const routes = new Set(["/know-your-chart", "/relationships", "/compatibility", "/career-money"]);
+  const listeners = new Set();
+  let hostReady = false;
+  let routeState = {};
+  let pendingSelection = null;
+  function clean(query) {
+    const result = {};
+    for (const key of ["placement", "sign", "you", "them"]) {
+      const value = typeof query?.[key] === "string" ? query[key].toLowerCase() : "";
+      if ((key === "placement" ? placements : signs).has(value)) result[key] = value;
+    }
+    return result;
   }
+  function emit() {
+    listeners.forEach(listener => listener("route-state", { ...routeState }));
+    window.dispatchEvent(new CustomEvent("mtys:route-state"));
+  }
+  function post(message) {
+    if (window.parent !== window) window.parent.postMessage({ source: "mtys-widget", ...message }, WIX_ORIGIN);
+  }
+  function apply(query, push) {
+    routeState = clean(query);
+    const url = new URL(window.location.href);
+    for (const key of ["placement", "sign", "you", "them"]) url.searchParams.delete(key);
+    Object.entries(routeState).forEach(([key, value]) => url.searchParams.set(key, value));
+    window.history[push ? "pushState" : "replaceState"]({}, "", url);
+    emit();
+  }
+  window.addEventListener("message", event => {
+    if (event.source !== window.parent || event.origin !== WIX_ORIGIN) return;
+    const message = event.data;
+    if (!message || message.source !== "mtys-host") return;
+    if (message.type === "host-ready") hostReady = true;
+    if (message.type === "route-state" && message.query && typeof message.query === "object") {
+      if (pendingSelection) {
+        const pending = pendingSelection;
+        pendingSelection = null;
+        post({ type: "set-state", query: pending });
+        return;
+      }
+      apply(message.query, false);
+    }
+  });
+  function brandedUrl(path, query = {}) {
+    if (!routes.has(path)) throw new Error("Unsupported MTYS route");
+    const url = new URL(SITE_BASE + path);
+    Object.entries(clean(query)).forEach(([key, value]) => url.searchParams.set(key, value));
+    return url.href;
+  }
+  window.MTYSBridge = {
+    SITE_BASE,
+    brandedUrl,
+    navigate(event, href) {
+      if (!hostReady || window.parent === window) return false;
+      const url = new URL(href, `${SITE_BASE}/`);
+      const path = url.pathname.replace("/more-than-your-sun-4", "");
+      if (url.origin !== WIX_ORIGIN || !routes.has(path)) return false;
+      event.preventDefault();
+      post({ type: "navigate", path, query: clean(Object.fromEntries(url.searchParams)), hash: /^#[a-z0-9-]{1,80}$/i.test(url.hash) ? url.hash : "" });
+      return true;
+    },
+    setRouteState(query) {
+      const next = clean(query);
+      if (hostReady && window.parent !== window) {
+        apply(next, false);
+        post({ type: "set-state", query: next });
+      } else {
+        apply(next, true);
+        if (window.parent !== window) pendingSelection = next;
+      }
+    },
+    getRouteState: () => ({ ...routeState }),
+    consumeRouteState: () => ({ ...routeState }),
+    on(listener) { listeners.add(listener); return () => listeners.delete(listener); }
+  };
+  let attempts = 0;
+  function ready() {
+    if (hostReady || attempts++ >= 20) return;
+    post({ type: "ready" });
+    window.setTimeout(ready, 250);
+  }
+  ready();
+})();
 
+(() => {
   const scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : window.location.href;
@@ -131,11 +161,9 @@
 
     getState() {
       const params = new URLSearchParams(window.location.search);
-      const hostState = window.MTYSBridge ? window.MTYSBridge.consumeRouteState() : {};
-      Object.entries(hostState).forEach(([key, value]) => params.set(key, value));
       return {
-        yours: this.validSign(params.get("you")) || this.validSign("aries"),
-        theirs: this.validSign(params.get("them")) || this.validSign("taurus")
+        yours: this.validSign(params.get("you")),
+        theirs: this.validSign(params.get("them"))
       };
     }
 
@@ -154,7 +182,11 @@
       const url = new URL(window.location.href);
       url.searchParams.set("you", yours.key);
       url.searchParams.set("them", theirs.key);
-      window.history.pushState({}, "", url);
+      if (window.MTYSBridge?.setRouteState) {
+        window.MTYSBridge.setRouteState(Object.fromEntries(url.searchParams));
+      } else {
+        window.history.pushState({}, "", url);
+      }
       this.render();
       window.requestAnimationFrame(() => {
         const reading = this.shadowRoot.querySelector("#compatibility-reading");
@@ -170,6 +202,7 @@
       const shareButton = event.target.closest("[data-action='copy-link']");
       if (shareButton) {
         const state = this.getState();
+        if (!state.yours || !state.theirs) return;
         const link = window.MTYSBridge
           ? window.MTYSBridge.brandedUrl("/compatibility", { you: state.yours.key, them: state.theirs.key })
           : `https://ashley35031.wixsite.com/more-than-your-sun-4/compatibility?you=${state.yours.key}&them=${state.theirs.key}`;

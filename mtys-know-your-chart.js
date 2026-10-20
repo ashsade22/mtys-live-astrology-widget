@@ -76,7 +76,6 @@
 
     getState() {
       const params = new URLSearchParams(window.location.search);
-      Object.entries(this.routeState).forEach(([key, value]) => params.set(key, value));
       const placement = params.get("placement");
       const sign = params.get("sign");
       const validPlacement = placement && this.content.placements[placement] ? placement : null;
@@ -101,7 +100,11 @@
         url.searchParams.delete("sign");
       }
 
-      window.history.pushState({}, "", url);
+      if (window.MTYSBridge?.setRouteState) {
+        window.MTYSBridge.setRouteState(Object.fromEntries(url.searchParams));
+      } else {
+        window.history.pushState({}, "", url);
+      }
       this.render();
       this.scrollIntoView({ behavior: "smooth", block: "start" });
     }

@@ -9,7 +9,7 @@
         ${this.card("Today\u2019s Focus",e.whatToExpect)}
         ${this.card("Your Best Move",e.whereToPutYourEnergy)}
       </div>
-    </main>`:this.emptyState("Today\u2019s horoscope is being prepared.")}weekPanel(){let e=this.bestWeekly();return e?`<main><div class="section-heading"><div><span class="eyebrow">This week</span><h2>${s(e.weeklyTheme||e.signName||this.signKey)}</h2></div><time>${g(e.weekStart)} \u2013 ${g(e.weekEnd)}</time></div>
+    </main>`:this.emptyState("Today\u2019s horoscope is being prepared.")}weekPanel(){let e=this.bestWeekly(),a=P(),t=e&&l(e.weekStart)<=a.start&&l(e.weekEnd)>=a.end;return e?`<main>${t?"":"<p role=\"status\">The current week is not available yet. This is the latest saved reading.</p>"}<div class="section-heading"><div><span class="eyebrow">${t?"This week":"Latest available reading"}</span><h2>${s(e.weeklyTheme||e.signName||this.signKey)}</h2></div><time>${g(e.weekStart)} \u2013 ${g(e.weekEnd)}</time></div>
       <div class="grid three">
         ${this.card("The Big Picture",e.whatsShifting)}
         ${this.card("What to Watch",e.whatToWatch)}

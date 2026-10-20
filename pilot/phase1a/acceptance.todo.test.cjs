@@ -1,0 +1,20 @@
+const test = require('node:test');
+// Deliberately TODO. These are not passing pilot acceptance tests.
+test.todo("Guest completes Moon to Mercury to approved application without repeated entry");
+test.todo("All 144 selected Moon Mercury pairs render approved application or explicit unavailable state");
+test.todo("User changes beat bootstrap and out of order host messages");
+test.todo("Expiry rejects exact boundary and invalid future timestamps");
+test.todo("Reset prevents Back Forward and stale iframe messages from reviving state");
+test.todo("Refresh Back Forward and BFCache restore exact validated journey step");
+test.todo("Fresh entry link cannot silently merge another journey checkpoint");
+test.todo("Third party storage denial quota error corrupt JSON and schema upgrade degrade safely");
+test.todo("Origin source path size and field allowlists reject unauthorized messages");
+test.todo("Visible first insight and intentional second start produce one activation per journey");
+test.todo("Denied analytics consent produces no analytics network calls or queued replay");
+test.todo("Loading unavailable empty invalid and failed content states are recoverable");
+test.todo("Cross page links carry only allowed public selections and never invent another placement");
+test.todo("320 375 390 430 widths have no clipped text horizontal scroll or trapped focus");
+test.todo("iPhone Safari and Android Chrome touch keyboard history and storage checks");
+test.todo("Iframe resize messages are bounded source validated and do not create scroll loops");
+test.todo("Production mounted asset versions and live event receipt match released source");
+test.todo("Rollback restores previous mount bridge and routes without touching horoscope systems");

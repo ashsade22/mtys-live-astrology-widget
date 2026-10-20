@@ -1,0 +1,92 @@
+{
+  "status": "PROPOSED: requires Abby consolidated brief approval; not a production implementation",
+  "schemaVersion": 1,
+  "journey": "emotional-needs-communication-relationships",
+  "allowedFields": [
+    "schemaVersion",
+    "journey",
+    "instanceId",
+    "revision",
+    "createdAt",
+    "expiresAt",
+    "step",
+    "moon",
+    "mercury",
+    "contentVersion",
+    "applicationVersion",
+    "recommendationId"
+  ],
+  "steps": [
+    "moon-select",
+    "moon-insight",
+    "mercury-select",
+    "mercury-insight",
+    "relationship-application",
+    "next"
+  ],
+  "selection": {
+    "allowedFields": [
+      "sign",
+      "basis",
+      "confirmed"
+    ],
+    "signKeys": [
+      "aries",
+      "taurus",
+      "gemini",
+      "cancer",
+      "leo",
+      "virgo",
+      "libra",
+      "scorpio",
+      "sagittarius",
+      "capricorn",
+      "aquarius",
+      "pisces"
+    ],
+    "basis": [
+      "selected_sign"
+    ],
+    "confirmed": "boolean; only explicit selection or confirmation sets true"
+  },
+  "timestamps": "integer UTC epoch milliseconds; expiresAt = createdAt + 86400000; now >= expiresAt invalid; no sliding extension",
+  "limits": {
+    "checkpointMaxBytes": 4096,
+    "messageMaxBytes": 8192,
+    "maxAgeMs": 86400000
+  },
+  "storage": {
+    "primary": "memory",
+    "optional": "sessionStorage",
+    "key": "mtys:d1719827-2c26-4bba-979a-b4cd4793d609:connected-discovery:v1",
+    "fallback": "memory only; no cookies/localStorage/server state introduced"
+  },
+  "validation": [
+    "Reject unknown fields, invalid enums, duplicate URL keys, malformed JSON, nonfinite/future timestamps, expiry and unsupported schema/content versions.",
+    "Never merge stale host input over a later user selection.",
+    "Moon insight requires confirmed Moon; Mercury insight and application require both confirmed selections.",
+    "Selecting a changed sign invalidates derived application and recommendation; preserve the other confirmed selection.",
+    "Do not persist interpretation text, analytics identifiers, event history, birth information, names or account tokens."
+  ],
+  "transport": {
+    "currentQueryAllowlist": [
+      "placement",
+      "sign",
+      "you",
+      "them"
+    ],
+    "newQueryKeys": [],
+    "proposedHistory": "namespaced host history.state for bounded pilot snapshots; preserve Wix history state fields; explicit opt-in protocol and frame mapping after approval; include instanceId and timestamps and validate against active instance before recovery",
+    "currentBridgeSupportsCombinedJourney": false
+  },
+  "precedence": [
+    "Explicit validated Back/Forward snapshot (within current journey and unexpired)",
+    "Current user action / newer accepted revision",
+    "Fresh validated entry link on a new navigation (requires confirmation; never inferred Moon from Sun)",
+    "Valid unexpired same-journey checkpoint for reload/recovery when no fresh conflicting link",
+    "Empty selections"
+  ],
+  "reset": "Revoke previous instanceId in the active runtime; purge prior checkpoint; create a new empty journey instance. If storage is available write the new empty checkpoint. Accept history only for a currently bound matching instance. With no storage after reload, do not revive unbound historical snapshots.",
+  "privacy": "Guest preferences only. No calculated chart claim. No private data, credentials or durable profile.",
+  "instanceId": "Random opaque functional journey instance; not an account ID and not sent to analytics."
+}

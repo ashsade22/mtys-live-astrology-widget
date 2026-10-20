@@ -1,0 +1,283 @@
+{
+  "status": "Invented preparation inputs; expected behavior is a specification, not runtime test evidence",
+  "cases": [
+    {
+      "id": "guest-empty",
+      "surface": "start",
+      "input": {},
+      "expected": "empty Moon selector; no personalized result"
+    },
+    {
+      "id": "selected-pair",
+      "surface": "valid snapshot",
+      "input": {
+        "schemaVersion": 1,
+        "journey": "emotional-needs-communication-relationships",
+        "revision": 3,
+        "createdAt": 1792468800000,
+        "expiresAt": 1792555200000,
+        "step": "relationship-application",
+        "moon": {
+          "sign": "gemini",
+          "basis": "selected_sign",
+          "confirmed": true
+        },
+        "mercury": {
+          "sign": "capricorn",
+          "basis": "selected_sign",
+          "confirmed": true
+        },
+        "contentVersion": "a9bb553b59e4b8a9e6abcb7c947b1437c622dc26",
+        "applicationVersion": "pending-approved-content",
+        "recommendationId": null,
+        "instanceId": "invented-journey-0001"
+      },
+      "expected": "Moon Gemini and Mercury Capricorn; selected sign labels; application awaits approved content"
+    },
+    {
+      "id": "fresh-entry",
+      "surface": "URL",
+      "input": {
+        "placement": "moon",
+        "sign": "leo"
+      },
+      "expected": "unconfirmed Leo Moon selection only; no inference of Mercury"
+    },
+    {
+      "id": "invalid-sign",
+      "surface": "URL",
+      "input": {
+        "placement": "moon",
+        "sign": "ophiuchus"
+      },
+      "expected": "invalid state; no Aries fallback"
+    },
+    {
+      "id": "duplicate-query",
+      "surface": "URL",
+      "input": {
+        "raw": "?placement=moon&sign=leo&sign=virgo"
+      },
+      "expected": "reject ambiguous sign; ask for explicit selection"
+    },
+    {
+      "id": "nonmoon-entry",
+      "surface": "URL",
+      "input": {
+        "placement": "sun",
+        "sign": "cancer"
+      },
+      "expected": "do not reinterpret Sun as Moon; ask for Moon"
+    },
+    {
+      "id": "changed-selection",
+      "surface": "user action",
+      "input": {
+        "moon": "taurus",
+        "prior": {
+          "schemaVersion": 1,
+          "journey": "emotional-needs-communication-relationships",
+          "revision": 3,
+          "createdAt": 1792468800000,
+          "expiresAt": 1792555200000,
+          "step": "relationship-application",
+          "moon": {
+            "sign": "gemini",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "mercury": {
+            "sign": "capricorn",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "contentVersion": "a9bb553b59e4b8a9e6abcb7c947b1437c622dc26",
+          "applicationVersion": "pending-approved-content",
+          "recommendationId": null,
+          "instanceId": "invented-journey-0001"
+        }
+      },
+      "expected": "Taurus Moon replaces Gemini; Mercury retained; derived application and recommendation invalidated"
+    },
+    {
+      "id": "late-host-message",
+      "surface": "race",
+      "input": {
+        "revision": 1,
+        "sign": "aries",
+        "current": {
+          "schemaVersion": 1,
+          "journey": "emotional-needs-communication-relationships",
+          "revision": 3,
+          "createdAt": 1792468800000,
+          "expiresAt": 1792555200000,
+          "step": "relationship-application",
+          "moon": {
+            "sign": "gemini",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "mercury": {
+            "sign": "capricorn",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "contentVersion": "a9bb553b59e4b8a9e6abcb7c947b1437c622dc26",
+          "applicationVersion": "pending-approved-content",
+          "recommendationId": null,
+          "instanceId": "invented-journey-0001"
+        }
+      },
+      "expected": "late bootstrap cannot overwrite current explicit selections"
+    },
+    {
+      "id": "expired",
+      "surface": "recovery",
+      "input": {
+        "now": 1792555200000,
+        "checkpoint": {
+          "schemaVersion": 1,
+          "journey": "emotional-needs-communication-relationships",
+          "revision": 3,
+          "createdAt": 1792468800000,
+          "expiresAt": 1792555200000,
+          "step": "relationship-application",
+          "moon": {
+            "sign": "gemini",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "mercury": {
+            "sign": "capricorn",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "contentVersion": "a9bb553b59e4b8a9e6abcb7c947b1437c622dc26",
+          "applicationVersion": "pending-approved-content",
+          "recommendationId": null,
+          "instanceId": "invented-journey-0001"
+        }
+      },
+      "expected": "checkpoint purged; expired notice; no personalized result"
+    },
+    {
+      "id": "storage-denied",
+      "surface": "storage",
+      "input": {
+        "error": "SecurityError"
+      },
+      "expected": "continue in memory; explain temporary recovery unavailable"
+    },
+    {
+      "id": "quota-exceeded",
+      "surface": "storage",
+      "input": {
+        "error": "QuotaExceededError"
+      },
+      "expected": "continue in memory without failed journey"
+    },
+    {
+      "id": "corrupt-storage",
+      "surface": "recovery",
+      "input": {
+        "raw": "{invalid"
+      },
+      "expected": "purge only pilot key; safe empty state"
+    },
+    {
+      "id": "unsupported-version",
+      "surface": "recovery",
+      "input": {
+        "schemaVersion": 999
+      },
+      "expected": "discard checkpoint; safe restart"
+    },
+    {
+      "id": "private-extra-fields",
+      "surface": "message",
+      "input": {
+        "email": "invented@example.invalid",
+        "birthDate": "2000-01-01"
+      },
+      "expected": "reject payload and log only bounded error code"
+    },
+    {
+      "id": "reset-history",
+      "surface": "navigation",
+      "input": {
+        "action": "reset then Back"
+      },
+      "expected": "prior journey signs not resurrected"
+    },
+    {
+      "id": "refresh-application",
+      "surface": "reload",
+      "input": {
+        "checkpoint": {
+          "schemaVersion": 1,
+          "journey": "emotional-needs-communication-relationships",
+          "revision": 3,
+          "createdAt": 1792468800000,
+          "expiresAt": 1792555200000,
+          "step": "relationship-application",
+          "moon": {
+            "sign": "gemini",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "mercury": {
+            "sign": "capricorn",
+            "basis": "selected_sign",
+            "confirmed": true
+          },
+          "contentVersion": "a9bb553b59e4b8a9e6abcb7c947b1437c622dc26",
+          "applicationVersion": "pending-approved-content",
+          "recommendationId": null,
+          "instanceId": "invented-journey-0001"
+        }
+      },
+      "expected": "recover valid selections; recompute from approved current content; no duplicate activation"
+    },
+    {
+      "id": "interrupted-invitation",
+      "surface": "navigation",
+      "input": {
+        "step": "next",
+        "externalDialogClosed": true
+      },
+      "expected": "guest result retained until expiry; no account-save claim"
+    },
+    {
+      "id": "wrong-origin",
+      "surface": "message",
+      "input": {
+        "origin": "https://example.invalid"
+      },
+      "expected": "ignore without state or navigation mutation"
+    },
+    {
+      "id": "unconfirmed-input",
+      "surface": "validation",
+      "input": {
+        "moon": {
+          "sign": "leo",
+          "basis": "selected_sign",
+          "confirmed": false
+        }
+      },
+      "expected": "no relevant insight received event until confirmation and visible result"
+    },
+    {
+      "id": "calculated-claim",
+      "surface": "validation",
+      "input": {
+        "moon": {
+          "sign": "leo",
+          "basis": "calculated_chart",
+          "confirmed": true
+        }
+      },
+      "expected": "reject unsupported basis; no chart calculation in this pilot"
+    }
+  ]
+}

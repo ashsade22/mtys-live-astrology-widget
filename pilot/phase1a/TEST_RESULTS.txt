@@ -1,0 +1,56 @@
+Phase 1A local preparation checks, October 20 2026 UTC.
+26 pass, 0 fail, 18 TODO. TODOs are NOT completed pilot tests.
+No production deployment or mobile/browser acceptance run.
+
+✔ Guest completes Moon to Mercury to approved application without repeated entry (1.069159ms) # TODO
+✔ All 144 selected Moon Mercury pairs render approved application or explicit unavailable state (0.155576ms) # TODO
+✔ User changes beat bootstrap and out of order host messages (0.10562ms) # TODO
+✔ Expiry rejects exact boundary and invalid future timestamps (0.100312ms) # TODO
+✔ Reset prevents Back Forward and stale iframe messages from reviving state (0.203008ms) # TODO
+✔ Refresh Back Forward and BFCache restore exact validated journey step (0.110267ms) # TODO
+✔ Fresh entry link cannot silently merge another journey checkpoint (0.162556ms) # TODO
+✔ Third party storage denial quota error corrupt JSON and schema upgrade degrade safely (0.108324ms) # TODO
+✔ Origin source path size and field allowlists reject unauthorized messages (0.121134ms) # TODO
+✔ Visible first insight and intentional second start produce one activation per journey (0.256629ms) # TODO
+✔ Denied analytics consent produces no analytics network calls or queued replay (0.102375ms) # TODO
+✔ Loading unavailable empty invalid and failed content states are recoverable (0.109887ms) # TODO
+✔ Cross page links carry only allowed public selections and never invent another placement (0.063856ms) # TODO
+✔ 320 375 390 430 widths have no clipped text horizontal scroll or trapped focus (0.060211ms) # TODO
+✔ iPhone Safari and Android Chrome touch keyboard history and storage checks (0.085599ms) # TODO
+✔ Iframe resize messages are bounded source validated and do not create scroll loops (3.298084ms) # TODO
+✔ Production mounted asset versions and live event receipt match released source (0.103787ms) # TODO
+✔ Rollback restores previous mount bridge and routes without touching horoscope systems (0.078359ms) # TODO
+✔ moon existing content contains all twelve complete readings (4.074198ms)
+✔ mercury existing content contains all twelve complete readings (0.382659ms)
+✔ All 144 input pairs have both source readings; paired synthesis is not asserted (0.401218ms)
+✔ Content file remains identical to verified production baseline (0.588832ms)
+✔ Preparation fixtures have unique cases and explicit expected behavior (0.212892ms)
+✔ Proposed scope excludes calculated charts and new public query keys (3.87002ms)
+✔ Know Your Chart later selection wins over original route state (15.342652ms)
+✔ Compatibility repeated reads retain initial pair (6.748358ms)
+✔ /know-your-chart changes Back Forward refresh and repeated reads (7.748983ms)
+✔ /compatibility changes Back Forward refresh and repeated reads (2.589451ms)
+✔ Compatibility has no silent default for empty or invalid inputs (7.352243ms)
+✔ Know reset clears initial deep link and survives Back (1.392548ms)
+✔ Share links use current pair and strip unrelated values (1.314771ms)
+✔ Incoming and outgoing query allowlist validates signs and placements (1.122079ms)
+✔ Unrecognized frames and origins cannot change host state (9.331389ms)
+✔ Cross-page navigation preserves valid routes and strips private parameters (1.693614ms)
+✔ Standalone Back and Forward preserve explicit selections (0.746731ms)
+✔ All permanent sign keys remain valid (0.607921ms)
+✔ Pacific Monday rollover 2026-10-19T06:59:59Z (16.210706ms)
+✔ Pacific Monday rollover 2026-10-19T07:00:00Z (1.077401ms)
+✔ Pacific Monday rollover 2026-11-02T07:59:59Z (0.901705ms)
+✔ Pacific Monday rollover 2026-11-02T08:00:00Z (0.749966ms)
+✔ stale week remains dated and explicitly unavailable as current (1.040836ms)
+✔ all 12 signs select the eligible current week instead of stale fallback (6.318286ms)
+✔ missing week keeps the existing preparation message (1.100967ms)
+✔ archived current rows are not treated as eligible (0.690716ms)
+ℹ tests 44
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 18
+ℹ duration_ms 335.566447

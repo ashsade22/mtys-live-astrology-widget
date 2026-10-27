@@ -533,4 +533,10 @@ export default `
       text-align: center;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-choice {
+      transition: none;
+    }
+  }
 `;

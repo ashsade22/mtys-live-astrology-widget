@@ -30,8 +30,8 @@
 
     async load() {
       try {
-        const contentUrl = new URL("relationships-content.js?v=20261011a", scriptUrl).href;
-        const stylesUrl = new URL("relationships-styles.js?v=20261011a", scriptUrl).href;
+        const contentUrl = new URL("relationships-content.js?v=20261027-phase2b", scriptUrl).href;
+        const stylesUrl = new URL("relationships-styles.js?v=20261027-phase2b", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)
@@ -136,9 +136,21 @@
                 <p class="eyebrow">${escapeHtml(compatibility.eyebrow)}</p>
                 <h2 id="compatibility-heading">${escapeHtml(compatibility.title)}</h2>
                 <p class="section-copy">${escapeHtml(compatibility.body)}</p>
-                <a class="compatibility-cta" href="${escapeHtml(this.compatibilityUrl())}" target="_blank" rel="noopener" data-mtys-route>${escapeHtml(compatibility.cta)}</a>
+                <a class="compatibility-cta" href="${escapeHtml(this.compatibilityUrl())}" target="_blank" rel="noopener" data-mtys-route>Explore a two-person connection</a>
               </div>
-              <div class="compatibility-points">${points}</div>
+              <div>
+                <div class="relationship-map" role="img" aria-label="Two people connected through points of harmony, tension and growth">
+                  <span class="person-node person-a">You</span>
+                  <span class="living-line living-line-one" aria-hidden="true"></span>
+                  <span class="connection-core">Connection</span>
+                  <span class="living-line living-line-two" aria-hidden="true"></span>
+                  <span class="person-node person-b">Them</span>
+                  <span class="map-label harmony">Harmony</span>
+                  <span class="map-label tension">Tension</span>
+                  <span class="map-label growth">Growth</span>
+                </div>
+                <div class="compatibility-points">${points}</div>
+              </div>
             </div>
           </section>
 

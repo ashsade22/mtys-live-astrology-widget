@@ -31,7 +31,7 @@
     async load() {
       try {
         const contentUrl = new URL("relationships-content.js?v=20261027-phase2b", scriptUrl).href;
-        const stylesUrl = new URL("relationships-styles.js?v=20261027-phase2b", scriptUrl).href;
+        const stylesUrl = new URL("relationships-styles.js?v=20261027-phase2b1", scriptUrl).href;
         const [contentModule, stylesModule] = await Promise.all([
           import(contentUrl),
           import(stylesUrl)

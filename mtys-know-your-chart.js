@@ -334,7 +334,7 @@
                   <p class="eyebrow">ONE CONNECTED GUIDE</p>
                   <h3 id="guide-preview-title">What Makes You Tick<br><span>Your Personal Pattern Guide</span></h3>
                   <p>Go beyond separate placement descriptions with a guide that connects your emotional needs, communication, affection and action into practical patterns you can recognize in everyday life.</p>
-                  <p class="price-line"><strong>$29</strong> one-time purchase. No subscription.</p>
+                  <p class="price-line"><strong>$29</strong> one-time purchase. No subscription.</p>\n                  <p class="delivery-line">After you confirm your placements and complete purchase, the guide is assembled automatically. Delivery includes immediate browser access plus an email link to accessible HTML and a downloadable PDF. No individual interpretation by Ashley is required.</p>
                   <div class="guide-columns">
                     <div>
                       <p class="preview-label">INCLUDED</p>
